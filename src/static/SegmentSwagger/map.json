@@ -1,0 +1,27 @@
+{
+  "post": {
+    "summary": "Get Segment by bbox",
+    "tags": ["Segments"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "lon_min": "float",
+                "lat_min": "float",
+                "lon_max": "float",
+                "lat_max": "float"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

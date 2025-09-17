@@ -1,0 +1,3 @@
+sửa lại toàn bo insert va change services doi voi them dataID = null, kem them else neu k null
+insert/change data, report, img, text k can uploaderID.
+added phần chuyển vào train/val/test. cần thông qua evaluated, hoặc là validate cái report trước.

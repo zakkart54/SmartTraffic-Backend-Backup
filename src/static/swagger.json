@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Sample API", "version": "1.0" },
+  "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Enter JWT token directly (e.g., `<your_jwt_token>`)"
+      }
+    }
+  },
+  "security": [
+    {
+      "jwtAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Quản lý người dùng"
+    },
+    {
+      "name": "Data",
+      "description": "Quản lý Dữ liệu"
+    },
+    {
+      "name": "Notifications",
+      "description": "Quản lý Thông báo"
+    },
+    {
+      "name": "Images",
+      "description": "Quản lý hình ảnh"
+    },
+    {
+      "name": "Texts",
+      "description": "Quản lý văn bản"
+    },
+    {
+      "name": "TrafficStatusInfos",
+      "description": "Quản lý thông tin trạng thái"
+    },
+    {
+      "name": "NodeOSM",
+      "description": "Quản lý các Nodes"
+    },
+    {
+      "name": "WayOSM",
+      "description": "Quản lý các WayOSM"
+    },
+    {
+      "name": "RelationOSM",
+      "description": "Quản lý các RelationOSM"
+    },
+    {
+      "name": "Segments",
+      "description": "Quản lý các Segments"
+    },
+    {
+      "name": "Reports",
+      "description": "Quản lý các Reports"
+    }
+  ],
+  "paths": {
+    "/data/{id}": {
+      "$ref": "./dataSwagger/ID.json"
+    },
+    "/data/": {
+      "$ref": "./dataSwagger/noID.json"
+    },
+    "/data/img": {
+      "$ref": "./dataSwagger/img.json"
+    },
+    "/data/text": {
+      "$ref": "./dataSwagger/text.json"
+    },
+    "/data/eval/{id}": {
+      "$ref": "./dataSwagger/eval.json"
+    },
+    "/data/trainValTest": {
+      "$ref": "./dataSwagger/trainValTest.json"
+    },
+    "/user/{id}": {
+      "$ref": "./userSwagger/ID.json"
+    },
+    "/user": {
+      "$ref": "./userSwagger/noID.json"
+    },
+    "/auth/login": {
+      "$ref": "./authSwagger/login.json"
+    },
+    "/auth/refresh": {
+      "$ref": "./authSwagger/refresh.json"
+    },
+    "/notifications/{id}": {
+      "$ref": "./notificationSwagger/ID.json"
+    },
+    "/notifications/": {
+      "$ref": "./notificationSwagger/noID.json"
+    },
+    "/notifications/gps": {
+      "$ref": "./notificationSwagger/gps.json"
+    },
+    "/notifications/user/{id}": {
+      "$ref": "./notificationSwagger/user.json"
+    },
+    "/image/{id}": {
+      "$ref": "./imageSwagger/ID.json"
+    },
+    "/image/": {
+      "$ref": "./imageSwagger/noID.json"
+    },
+    "/image/uploader/{username}": {
+      "$ref": "./imageSwagger/uploader.json"
+    },
+    "/text/{id}": {
+      "$ref": "./textSwagger/ID.json"
+    },
+    "/text/": {
+      "$ref": "./textSwagger/noID.json"
+    },
+    "/text/uploader/{username}": {
+      "$ref": "./textSwagger/uploader.json"
+    },
+    "/trafficStatusInfo/{id}": {
+      "$ref": "./trafficStatusInfoSwagger/ID.json"
+    },
+    "/trafficStatusInfo/": {
+      "$ref": "./trafficStatusInfoSwagger/noID.json"
+    },
+    "/trafficStatusInfo/uploader/{id}": {
+      "$ref": "./trafficStatusInfoSwagger/uploader.json"
+    },
+    "/nodeOSM/{id}": {
+      "$ref": "./NodeOSMSwagger/ID.json"
+    },
+    "/nodeOSM/": {
+      "$ref": "./NodeOSMSwagger/noID.json"
+    },
+    "/nodeOSM/coor": {
+      "$ref": "./NodeOSMSwagger/coor.json"
+    },
+    "/wayOSM/{id}": {
+      "$ref": "./WayOSMSwagger/ID.json"
+    },
+    "/wayOSM/": {
+      "$ref": "./WayOSMSwagger/noID.json"
+    },
+    "/relationOSM/{id}": {
+      "$ref": "./RelationOSMSwagger/ID.json"
+    },
+    "/relationOSM/": {
+      "$ref": "./RelationOSMSwagger/noID.json"
+    },
+    "/segment/{id}": {
+      "$ref": "./SegmentSwagger/ID.json"
+    },
+    "/segment/": {
+      "$ref": "./SegmentSwagger/noID.json"
+    },
+    "/segment/gps": {
+      "$ref": "./SegmentSwagger/gps.json"
+    },
+    "/segment/map": {
+      "$ref": "./SegmentSwagger/map.json"
+    },
+    "/report/{id}": {
+      "$ref": "./reportSwagger/ID.json"
+    },
+    "/report": {
+      "$ref": "./reportSwagger/noID.json"
+    },
+    "/report/autoVerify/{id}": {
+      "$ref": "./reportSwagger/autoVerify.json"
+    }
+  }
+}

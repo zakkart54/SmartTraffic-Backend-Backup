@@ -1,0 +1,25 @@
+{
+  "put": {
+    "summary": "Cập nhật train/val/text của ID (Đưa nội dung tham số ID hay không đều được)",
+    "tags": ["Data"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "_id": "abcdabcdabcdabcdabcdabcd",
+                "value": "train"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "post": {
+    "summary": "Find Segment using GPS",
+    "tags": ["Segments"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "lat": 106,
+                "lon": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

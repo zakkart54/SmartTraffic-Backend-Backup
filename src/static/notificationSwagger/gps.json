@@ -1,0 +1,26 @@
+{
+  "post": {
+    "summary": "Create New Notifications near User using GPS",
+    "tags": ["Notifications"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "userID": "objectId",
+                "lat": 106.8084721,
+                "lon": 10.8745146
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

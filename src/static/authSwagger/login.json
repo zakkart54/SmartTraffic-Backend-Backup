@@ -1,0 +1,25 @@
+{
+  "post": {
+    "summary": "Đăng nhập",
+    "tags": ["Users"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "username": "string",
+                "password": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

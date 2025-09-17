@@ -1,0 +1,21 @@
+{
+  "get": {
+    "summary": "Get Image Info By Uploader Username",
+    "tags": ["Images"],
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Username của item cần lấy"
+      }
+    ],
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

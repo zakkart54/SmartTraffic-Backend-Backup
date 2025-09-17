@@ -1,0 +1,68 @@
+{
+  "get": {
+    "summary": "Lấy mọi data (Cần authorization của Admin)",
+    "tags": ["Data"],
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  },
+  "post": {
+    "summary": "Tạo data mới rỗng (Đưa hay không đưa tham số userID đều được)",
+    "tags": ["Data"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "segmentID": "wayID_index",
+                "uploaderID": "abcdabcdabcdabcdabcdabcd",
+                "type": {
+                  "bsonType": "string",
+                  "enum": ["image", "video", "text", "speech"]
+                },
+                "location": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  },
+  "put": {
+    "summary": "Sửa đổi nội dung data (Đưa nội dung tham số ID hay không đều được)",
+    "tags": ["Data"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "uploaderID": "abcdabcdabcdabcdabcdabcd",
+                "reportID": ["abcdabcdabcdabcdabcdabcd", "null"],
+                "type": {
+                  "enum": ["image", "text"]
+                },
+                "InfoID": ["abcdabcdabcdabcdabcdabcd", "null"],
+                "uploadTime": "date",
+                "processed": "bool",
+                "location": ["string", "null"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}
