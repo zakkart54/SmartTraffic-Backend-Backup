@@ -1,24 +1,20 @@
-from DBConfig.DBConnect import TrafficMongoClient
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
-from flask import jsonify
+from flask import current_app
 from datetime import datetime, timedelta
-
 
 def findUserDAL(body):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         account = userTable.find_one({"username": body["username"]})
         return account
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def createRefreshTokenDAL(account,refresh_token):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         refreshTokenTable = client.db['refreshTokens']
         print(datetime.now() + timedelta(days=7))
         res = refreshTokenTable.insert_one({
@@ -30,12 +26,10 @@ def createRefreshTokenDAL(account,refresh_token):
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findRefreshTokenDAL(body):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         refreshTokenTable = client.db['refreshTokens']
         print({
             "token": body["token"],
@@ -53,73 +47,58 @@ def findRefreshTokenDAL(body):
         return refresh_token
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findAllUserDAL():
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         res = userTable.find()
         res = list(res)
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findUserByIDDAL(id):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         res = userTable.find_one({"_id": ObjectId(id)})
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findUserByUsernameDAL(username):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         res = userTable.find_one({"username": username})
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
-
 
 def insertUserDAL(body):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         userTable.insert_one(body)
         return body
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def updateUserDAL(body):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         userTable.update_one({'_id': body['_id']}, {"$set": body})
         return body
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def deleteUserDAL(id):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         userTable = client.db["users"]
         res = userTable.delete_one({"_id": ObjectId(id)})
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()

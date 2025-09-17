@@ -1,25 +1,20 @@
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
-from datetime import datetime
-from DBConfig.DBConnect import TrafficMongoClient
-from flask import jsonify
-
+from flask import current_app
 
 def findAllRelationOSMDAL():
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         relationsTable = client.db["relations"]
         res = relationsTable.find()
         res = list(res)
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findRelationOSMByIDDAL(id):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         relationsTable = client.db["relations"]
         print(type(id))
         res = relationsTable.find_one({"id": id})
@@ -27,5 +22,3 @@ def findRelationOSMByIDDAL(id):
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()

@@ -32,6 +32,18 @@ def getUserID(id):
     except Exception as e:
         print(e)
         return str(e), 500
+    
+@user_blueprint.get('/profile')
+def getUserProfile():
+    try:
+        access_token = request.headers.get('Authorization')
+        if not access_token: return jsonify({"error": "Bad Request"}), 400 
+        id = checkToken(access_token)[0]
+        res = findUserProfile(id)
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500
 
 @user_blueprint.post('/')
 def insertUserInstance():

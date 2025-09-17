@@ -1,62 +1,55 @@
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime
-from DBConfig.DBConnect import TrafficMongoClient
-from flask import jsonify
+from flask import jsonify, current_app
 
 def findAllSegmentDAL():
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         segmentTable = client.db["segments"]
         res = segmentTable.find()
         res = list(res)
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findSegmentByIDDAL(id):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         segmentTable = client.db["segments"]
         res = segmentTable.find_one({"id": id})
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findSegmentByNodeDAL(nodeID):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         segmentTable = client.db["segments"]
         res = segmentTable.find({"nodes": nodeID})
         res = list(res)
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def updateSegmentDAL(body):
     try:
+        client = current_app.config['DB_CLIENT']
+        segmentTable = client.db["segments"]
         res = findSegmentByIDDAL(body['id'])
         if res == None: 
             return jsonify({"error": "Not Found"}), 404
-        client = TrafficMongoClient()
-        segmentTable = client.db["segments"]
         print(body)
         segmentTable.update_one({'id': body['id']}, {"$set": body})
         print(body)
         return body
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findSegmentsWithNodeIDs(node_ids):
     try:
+        client = current_app.config['DB_CLIENT']
+        segmentTable = client.db["segments"]
         pipeline = [
             {
                 "$match": {
@@ -72,11 +65,7 @@ def findSegmentsWithNodeIDs(node_ids):
                 }
             }
         ]
-        client = TrafficMongoClient()
-        segmentTable = client.db["segments"]
         segments = list(segmentTable.aggregate(pipeline))
         return segments
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()

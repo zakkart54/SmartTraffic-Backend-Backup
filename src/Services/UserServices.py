@@ -108,6 +108,14 @@ def findUserByID(id):
     res['_id'] = str(res['_id'])
     return res, 200
 
+def findUserProfile(id):
+    res = findUserByIDDAL(id)
+    if res is None:
+        return {}, 200
+    res_fields = ["username", "phoneNum", "fullName", "email", "DoB"]
+    res_data = {field: res.get(field) for field in res_fields}
+    return res_data, 200
+
 def findUserByUsername(username):
     res = findUserByUsernameDAL(username)
     if res == None: return {"msg": "Not found"}, 404

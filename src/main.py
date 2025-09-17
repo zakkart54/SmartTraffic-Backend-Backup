@@ -20,8 +20,13 @@ from flask_jwt_extended import (
 )
 import os
 from dotenv import load_dotenv
+from DBConfig.DBConnect import TrafficMongoClient
 
 app = Flask(__name__)
+
+#Connect DB
+client = TrafficMongoClient()
+app.config['DB_CLIENT'] = client
 
 #Add CORS into app
 CORS(app)

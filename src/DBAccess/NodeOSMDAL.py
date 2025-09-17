@@ -1,24 +1,21 @@
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime
-from DBConfig.DBConnect import TrafficMongoClient
-from flask import jsonify
+from flask import current_app, jsonify
 
 def findAllNodeOSMDAL():
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         res = nodeOSMTable.find()
         res = list(res)
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodeOSMbyCoorDAL(a,b):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         res = nodeOSMTable.find_one({
             "type": "node",
@@ -28,19 +25,17 @@ def findNodeOSMbyCoorDAL(a,b):
                         "type": "Point",
                         "coordinates": [a, b]
                     },
-                    "$maxDistance": 1000  # Giới hạn bán kính 1000 mét
+                    "$maxDistance": 1000
                 }
             }
         })
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodeOSMInSegmentbyCoorDAL(a,b):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         res = nodeOSMTable.find_one({
             "type": "node",
@@ -50,7 +45,7 @@ def findNodeOSMInSegmentbyCoorDAL(a,b):
                         "type": "Point",
                         "coordinates": [a, b]
                     },
-                    "$maxDistance": 1000  # Giới hạn bán kính 1000 mét
+                    "$maxDistance": 1000
                 }
             },
             "belongs_to_segments": {"$exists": True, "$ne": []}
@@ -58,12 +53,10 @@ def findNodeOSMInSegmentbyCoorDAL(a,b):
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodeOSMsInSegmentbyCoorDAL(a,b):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         res = nodeOSMTable.find({
             "type": "node",
@@ -78,40 +71,31 @@ def findNodeOSMsInSegmentbyCoorDAL(a,b):
             },
             "belongs_to_segments": {"$exists": True, "$ne": []}
         }).limit(50)
-        res = list(res)
-        return res
+        return list(res)
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodeOSMByIDDAL(id):
     try:
-        client = TrafficMongoClient()
-        table = client.db["nodes"]
-        print(type(id))
-        res = table.find_one({"type": "node","id": id})
-        print(res)
+        client = current_app.config['DB_CLIENT']
+        nodeOSMTable = client.db["nodes"]
+        res = nodeOSMTable.find_one({"type": "node","id": id})
         return res
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def updateNodeOSMDAL(body):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         body = nodeOSMTable.update_one({'id': body['id']}, {"$set": body})
         return body
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodesInBBoxDAL(lon_min, lat_min, lon_max, lat_max):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         nodes_in_bbox = list(nodeOSMTable.find(
             {
@@ -129,19 +113,16 @@ def findNodesInBBoxDAL(lon_min, lat_min, lon_max, lat_max):
         return nodes_in_bbox
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def findNodesOSMByIDsDAL(ids: list[int]):
     try:
-        client = TrafficMongoClient()
+        client = current_app.config['DB_CLIENT']
         nodeOSMTable = client.db["nodes"]
         cursor = nodeOSMTable.find(
             {"id": {"$in": ids}},
             {"id": 1, "location.coordinates": 1}
         )
         res = list(cursor)
-        print(res)
         return res
     except PyMongoError as e:
         raise e
