@@ -13,14 +13,12 @@ import bcrypt
 from flask_jwt_extended import decode_token
 from jwt.exceptions import InvalidTokenError
 
-client = TrafficMongoClient()
 from flask_jwt_extended import (
     create_access_token, create_refresh_token
 )
 
 #Toàn bộ giá trị trả về trong phần Try đều phải trả về bằng tuple (res, statusCode)
 #Toàn bộ dữ liệu không phải string thì update lại
-
 
 
 def hashPassword(username,password):
@@ -79,8 +77,6 @@ def login(body):
             return 'Invalid Username and Password!', 400
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
     
 def refreshToken(body):
     try:
@@ -92,8 +88,6 @@ def refreshToken(body):
             return jsonify({'error': 'Invalid or expired refresh token'}), 401
     except PyMongoError as e:
         raise e
-    finally:
-        client.close() 
 
 def findAllUser():
     res = findAllUserDAL()
@@ -139,8 +133,7 @@ def insertUser(body):
         return body, 201
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
+
 def updateUser(body):
     try:
         
@@ -152,11 +145,10 @@ def updateUser(body):
             return jsonify({"error": "Not Found"}), 40
         body = updateUserDAL(body)
         del body['_id']
-        return body, 201
+        del body['password']
+        return body, 200
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
 
 def deleteUser(id):
     try:
@@ -167,5 +159,17 @@ def deleteUser(id):
         return jsonify({"message": "Successful"}), 200
     except PyMongoError as e:
         raise e
-    finally:
-        client.close()
+        
+def changeUserPassword(user_id, old_password, new_password):
+    try:
+        res = findUserByIDDAL(user_id)
+        if res == None: 
+            return jsonify({"error": "Not Found"}), 404
+        if not checkPassword(res['username'],old_password,res['password']):
+            return jsonify({"error": "Password is incorrect"}), 400
+        new_hashed = hashPassword(res['username'], new_password)
+        res['password'] = new_hashed
+        updateUserDAL(res)
+        return jsonify({"message": "Successful"}), 200
+    except PyMongoError as e:
+        raise e

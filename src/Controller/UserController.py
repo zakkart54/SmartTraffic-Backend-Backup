@@ -110,3 +110,54 @@ def deleteUserID(id):
         print(e)
         return str(e), 500
     
+@user_blueprint.put('/change-password')
+def changePassword():
+    try:
+        access_token = request.headers.get('Authorization')
+        if not access_token:
+            return jsonify({"error": "Missing access token"}), 401
+
+        user_id = checkToken(access_token)[0]
+        
+
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Bad Request"}), 400
+
+        if 'old_password' not in data or 'new_password' not in data:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        old_password = data['old_password']
+        new_password = data['new_password']
+        
+
+        res = changeUserPassword(user_id, old_password, new_password)
+
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+@user_blueprint.put('/profile')
+def updateUserProfile():
+    try:
+        access_token = request.headers.get('Authorization')
+        if not access_token:
+            return jsonify({"error": "Missing access token"}), 401
+        user_id = checkToken(access_token)[0]
+        user = request.get_json()
+
+        if not user:
+            return jsonify({"error": "Bad Request"}), 400
+        
+        compareUser = findUserByID(user_id)[0]
+        for key in user.keys():
+            if key not in ["fullName" , "phoneNum" , "DoB"]:
+                return jsonify({"error": "Wrong key provided"}), 400 
+            compareUser[key] = user[key]
+
+        res = updateUser(compareUser)
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500
