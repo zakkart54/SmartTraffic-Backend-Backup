@@ -1,13 +1,13 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline, logging
-import os
 import re
+from pathlib import Path
 
 logging.set_verbosity_error()
 
-base_dir = os.path.dirname(__file__)
-model_dir = os.path.abspath(os.path.join(base_dir, "..", "models"))
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
-model = AutoModelForTokenClassification.from_pretrained(model_dir)
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_DIR = (BASE_DIR / ".." / "models").resolve()
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
+model = AutoModelForTokenClassification.from_pretrained(MODEL_DIR)
 ner_pipeline_obj = pipeline(
     "ner",
     model=model,
