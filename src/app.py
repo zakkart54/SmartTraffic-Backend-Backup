@@ -13,6 +13,7 @@ from Controller.RelationOSMController import relationOSM_blueprint
 from Controller.SegmentController import segment_blueprint
 from Controller.TextController import text_blueprint
 from Controller.ReportController import report_blueprint
+import os
 from EvaluationLib.main import *
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
@@ -146,4 +147,5 @@ if __name__ == "__main__":
     client = TrafficMongoClient()
     if not os.path.exists(os.getenv('STORAGE')): createDirs()
     else: print('storage exists')
-    app.run() 
+    port = int(os.environ.get("PORT", 5000))
+    app.run(port,host='0.0.0.0')
