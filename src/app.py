@@ -146,4 +146,4 @@ def createDirs():
 if __name__ == "__main__":
     if not os.path.exists(os.getenv('STORAGE')): createDirs()
     else: print('storage exists')
-    app.run(host='0.0.0.0',debug=True) 
+    app.run() 
