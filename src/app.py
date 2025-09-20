@@ -25,8 +25,7 @@ from DBConfig.DBConnect import TrafficMongoClient
 app = Flask(__name__)
 
 #Connect DB
-client = TrafficMongoClient()
-app.config['DB_CLIENT'] = client
+app.config['DB_CLIENT'] = TrafficMongoClient()
 
 #Add CORS into app
 CORS(app)
@@ -144,6 +143,7 @@ def createDirs():
     for subdir in subdirs:
         os.makedirs(os.path.join(base_dir, subdir), exist_ok=True)
 if __name__ == "__main__":
+    client = TrafficMongoClient()
     if not os.path.exists(os.getenv('STORAGE')): createDirs()
     else: print('storage exists')
     app.run() 
