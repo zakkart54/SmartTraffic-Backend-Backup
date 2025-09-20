@@ -567,8 +567,4 @@ class OSMHandler(o.SimpleHandler):
         except PyMongoError as e:
             print(e)
             sys.exit(1)
-    
-if __name__ == "__main__":
-    mydb = TrafficMongoClient()
-    mydb.createDatabase()
         
