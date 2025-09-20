@@ -147,5 +147,4 @@ if __name__ == "__main__":
     client = TrafficMongoClient()
     if not os.path.exists(os.getenv('STORAGE')): createDirs()
     else: print('storage exists')
-    port = int(os.environ.get("PORT", 5000))
-    app.run(port,host='0.0.0.0')
+    app.run(port=5000,host='0.0.0.0')
