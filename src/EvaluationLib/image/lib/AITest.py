@@ -10,7 +10,6 @@ def TestForPolices(img):
     results = model.predict(img,conf=0.25)
     negativeConfSummary = 1
     negativeConfLowest = 1
-    results[0].show()
     for det in results[0].boxes:
         conf = det.conf.item()  # Confidence score của bounding box
         negativeConfSummary *=(1-conf)
