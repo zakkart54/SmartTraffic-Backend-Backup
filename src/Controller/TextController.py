@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from Services.TextServices import *
-from Services.DataServices import findDataByTextID, findDataByUploaderID,findDataByID,updateData
-from Services.UserServices import checkToken,checkAdmin,findUserByUsername
+from ..Services.TextServices import *
+from ..Services.DataServices import findDataByTextID, findDataByUploaderID,findDataByID,updateData
+from ..Services.UserServices import checkToken,checkAdmin,findUserByUsername
 from pymongo.errors import PyMongoError
 import time
 import os

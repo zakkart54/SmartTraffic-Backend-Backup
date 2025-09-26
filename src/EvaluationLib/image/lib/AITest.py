@@ -1,5 +1,5 @@
 #Công An
-from EvaluationLib.image.lib.AITrain import *
+from .AITrain import *
 from ultralytics import YOLO
 import cv2
 from dotenv import *

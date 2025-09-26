@@ -1,5 +1,5 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.NodeOSMDAL import *
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.NodeOSMDAL import *
 from pymongo.errors import PyMongoError
 from pymongo import GEOSPHERE
 from bson.objectid import ObjectId

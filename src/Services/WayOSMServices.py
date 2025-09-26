@@ -1,8 +1,8 @@
-from DBConfig.DBConnect import TrafficMongoClient
+from ..DBConfig.DBConnect import TrafficMongoClient
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
-from DBAccess.WayOSMDAL import *
+from ..DBAccess.WayOSMDAL import *
 
 #["id", "type", "location", "tags", "version", "timestamp", "changeset", "uid", "user"]
 def findAllWayOSM():

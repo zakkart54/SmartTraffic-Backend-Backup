@@ -1,7 +1,7 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.SegmentDAL import *
-from DBAccess.NodeOSMDAL import findNodesInBBoxDAL, findNodesOSMByIDsDAL
-from Services.NodeOSMServices import findNodeOSMInSegmentbyCoor, findNodeOSMsInSegmentbyCoor
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.SegmentDAL import *
+from ..DBAccess.NodeOSMDAL import findNodesInBBoxDAL, findNodesOSMByIDsDAL
+from ..Services.NodeOSMServices import findNodeOSMInSegmentbyCoor, findNodeOSMsInSegmentbyCoor
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
@@ -68,6 +68,7 @@ def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):
             return [], 200
         
         segments = findSegmentsWithNodeIDs(node_ids)
+        current_hour = datetime.now().hour
 
         result = []
         for seg in segments:
@@ -76,11 +77,11 @@ def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):
             for r in seg_nodes:
                 r.pop('_id', None)
             seg_node_dict = {n["id"]: n for n in seg_nodes}
-
+            status = seg.get("status", [])
             seg_obj = {
                 "id": seg["id"],
                 "coordinates": [],
-                "status": [s.get("statuses", {}) for s in seg.get("status_docs", [])]
+                "status": status[current_hour] if current_hour < len(status) else {}
             }
 
             # build coordinates

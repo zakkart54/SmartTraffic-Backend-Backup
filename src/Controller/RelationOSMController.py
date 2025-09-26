@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from Services.RelationOSMServices import *
+from ..Services.RelationOSMServices import *
 from pymongo.errors import PyMongoError
 from bson import ObjectId
 relationOSM_blueprint = Blueprint('relationOSM',__name__)

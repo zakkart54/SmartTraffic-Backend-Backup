@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from Services.SegmentServices import *
+from ..Services.SegmentServices import *
 from pymongo.errors import PyMongoError
 import gzip
 import json

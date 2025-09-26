@@ -1,9 +1,9 @@
-from DBConfig.DBConnect import TrafficMongoClient
+from ..DBConfig.DBConnect import TrafficMongoClient
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
 from datetime import datetime
-from DBAccess.TextDAL import *
+from ..DBAccess.TextDAL import *
 
 def findAllText():
     res = findAllTextDAL()

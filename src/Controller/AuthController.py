@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from Services.UserServices import *
+from ..Services.UserServices import *
 from pymongo.errors import PyMongoError
 auth_blueprint = Blueprint('auth',__name__)
 

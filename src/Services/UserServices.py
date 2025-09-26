@@ -1,5 +1,5 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.UserDAL import *
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.UserDAL import *
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
@@ -45,7 +45,7 @@ def checkToken(accessTok):
         if findUserByID(id)[0]!={}:
             return id, 201
         else:
-            raise "Invalid Token!"
+            raise Exception("Invalid Token!")
     except InvalidTokenError as e:
         print("Token không hợp lệ:", str(e))
         raise e

@@ -1,27 +1,27 @@
 from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-from Controller.DataController import data_blueprint
-from Controller.UserController import user_blueprint
-from Controller.NotificationController import notifications_blueprint
-from Controller.ImageController import image_blueprint
-from Controller.AuthController import auth_blueprint
-from Controller.TrafficStatusInfoController import trafficStatusInfo_blueprint
-from Controller.NodeOSMController import nodeOSM_blueprint
-from Controller.WayOSMController import wayOSM_blueprint
-from Controller.RelationOSMController import relationOSM_blueprint
-from Controller.SegmentController import segment_blueprint
-from Controller.TextController import text_blueprint
-from Controller.ReportController import report_blueprint
+from .Controller.DataController import data_blueprint
+from .Controller.UserController import user_blueprint
+from .Controller.NotificationController import notifications_blueprint
+from .Controller.ImageController import image_blueprint
+from .Controller.AuthController import auth_blueprint
+from .Controller.TrafficStatusInfoController import trafficStatusInfo_blueprint
+from .Controller.NodeOSMController import nodeOSM_blueprint
+from .Controller.WayOSMController import wayOSM_blueprint
+from .Controller.RelationOSMController import relationOSM_blueprint
+from .Controller.SegmentController import segment_blueprint
+from .Controller.TextController import text_blueprint
+from .Controller.ReportController import report_blueprint
 import os
-from EvaluationLib.main import *
+from .EvaluationLib.main import *
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
     JWTManager
 )
 import os
 from dotenv import load_dotenv
-from DBConfig.DBConnect import TrafficMongoClient
+from .DBConfig.DBConnect import TrafficMongoClient
 
 app = Flask(__name__)
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from Services.TrafficStatusInfoServices import *
-from Services.UserServices import checkAdmin, checkToken
-from Services.DataServices import findDataByStatusInfoID, findDataByUploaderID
+from ..Services.TrafficStatusInfoServices import *
+from ..Services.UserServices import checkAdmin, checkToken
+from ..Services.DataServices import findDataByStatusInfoID, findDataByUploaderID
 from pymongo.errors import PyMongoError
 trafficStatusInfo_blueprint = Blueprint('trafficStatusInfo',__name__)
 

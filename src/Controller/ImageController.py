@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from Services.ImageServices import *
-from Services.DataServices import findDataByImageID, findDataByUploaderID, findDataByID, updateData, handleFormDataforImage
-from Services.UserServices import checkToken,checkAdmin,findUserByUsername
+from ..Services.ImageServices import *
+from ..Services.DataServices import findDataByImageID, findDataByUploaderID, findDataByID, updateData, handleFormDataforImage
+from ..Services.UserServices import checkToken,checkAdmin,findUserByUsername
 from pymongo.errors import PyMongoError
 import time
 image_blueprint = Blueprint('image',__name__)

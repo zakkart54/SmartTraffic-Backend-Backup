@@ -1,6 +1,6 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.DataDAL import findDataByIDDAL, updateDataDAL
-from DBAccess.ImageDAL import *
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.DataDAL import findDataByIDDAL, updateDataDAL
+from ..DBAccess.ImageDAL import *
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify

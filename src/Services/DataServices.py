@@ -1,8 +1,8 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.DataDAL import *
-from Services.ImageServices import insertImage, findImageByID, handleFormDataforImage
-from Services.TextServices import insertText, findTextByID
-from Services.TrafficStatusInfoServices import updateTrafficStatusInfo, insertTrafficStatusInfo
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.DataDAL import *
+from ..Services.ImageServices import insertImage, findImageByID, handleFormDataforImage
+from ..Services.TextServices import insertText, findTextByID
+from ..Services.TrafficStatusInfoServices import updateTrafficStatusInfo, insertTrafficStatusInfo
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -11,9 +11,10 @@ import os
 import time
 import shutil
 from dotenv import *
-from EvaluationLib.main import *
-from EvaluationLib.image.lib.AITest import *
-from EvaluationLib.text.lib.AITest import *
+from ..EvaluationLib.main import *
+from ..EvaluationLib.image.lib.AITest import *
+from ..EvaluationLib.text.lib.AITest import *
+import base64
 #Toàn bộ giá trị trả về trong phần Try đều phải trả về bằng tuple (res, statusCode)
 #Toàn bộ dữ liệu không phải string thì update lại
 
@@ -375,3 +376,50 @@ def handlePutTrainValTest(data, status, value):
         os.remove(os.getenv('STORAGE') + '/texts/unverified/' + text['source'])
     updateData(data)
     return data, 200
+
+def sendContent(data):
+    storage_root = os.getenv("STORAGE", "storage")
+    content = None
+    source = None
+
+    if data['type'] == 'image':
+        record = findImageByID(data['InfoID'])[0]
+        source = record['source']
+        base_folder = os.path.join(storage_root, "images")
+    else:
+        record = findTextByID(data['InfoID'])[0]
+        source = record['source']
+        base_folder = os.path.join(storage_root, "texts")
+
+    search_folders = [
+        os.path.join(base_folder, "unverified"),
+        os.path.join(base_folder, "v_train"),
+        os.path.join(base_folder, "v_val"),
+        os.path.join(base_folder, "v_test"),
+    ]
+
+    file_path = None
+    for folder in search_folders:
+        for root, dirs, files in os.walk(folder):
+            if source in files:
+                file_path = os.path.join(root, source)
+                break
+        if file_path:
+            break
+
+    if not file_path:
+        return {"error": f"File {source} not found"}, 404
+
+    if data['type'] == 'image':
+        with open(file_path, "rb") as f:
+            content = base64.b64encode(f.read()).decode("utf-8")
+    else:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+    return {
+        "InfoID": data["InfoID"],
+        "type": data["type"],
+        "source": source,
+        "content": content
+    }, 200

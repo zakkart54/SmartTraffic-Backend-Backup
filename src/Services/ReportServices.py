@@ -1,8 +1,8 @@
-from DBConfig.DBConnect import TrafficMongoClient
-from DBAccess.ReportDAL import *
-from Services.DataServices import handleEvaluate
-from Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo, findTrafficStatusInfoByID
-from Services.SegmentServices import handleFindSegmentUsingCoor
+from ..DBConfig.DBConnect import TrafficMongoClient
+from ..DBAccess.ReportDAL import *
+from ..Services.DataServices import handleEvaluate
+from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo, findTrafficStatusInfoByID
+from ..Services.SegmentServices import handleFindSegmentUsingCoor
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime

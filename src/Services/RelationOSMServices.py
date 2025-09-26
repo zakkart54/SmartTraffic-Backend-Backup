@@ -1,8 +1,8 @@
-from DBConfig.DBConnect import TrafficMongoClient
+from ..DBConfig.DBConnect import TrafficMongoClient
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
-from DBAccess.RelationOSMDAL import *
+from ..DBAccess.RelationOSMDAL import *
 
 #Toàn bộ giá trị trả về trong phần Try đều phải trả về bằng tuple (res, statusCode)
 #Toàn bộ dữ liệu không phải string thì update lại

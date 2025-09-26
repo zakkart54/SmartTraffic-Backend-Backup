@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from Services.NotificationServices import *
-from Services.UserServices import checkToken
+from ..Services.NotificationServices import *
+from ..Services.UserServices import checkToken
 from pymongo.errors import PyMongoError
 from bson import ObjectId
 notifications_blueprint = Blueprint('notifications',__name__)

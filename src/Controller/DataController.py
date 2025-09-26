@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from Services.DataServices import *
-from Services.UserServices import checkToken,checkAdmin
-from Services.ImageServices import findImageByID, insertImage
-from Services.ImageServices import deleteImage
-from Services.TextServices import deleteText, findTextByID
-from Services.ReportServices import findReportByID, updateReport
-from Services.TrafficStatusInfoServices import findTrafficStatusInfoByID, deleteTrafficStatusInfo
+from ..Services.DataServices import *
+from ..Services.UserServices import checkToken,checkAdmin
+from ..Services.ImageServices import findImageByID, insertImage
+from ..Services.ImageServices import deleteImage
+from ..Services.TextServices import deleteText, findTextByID
+from ..Services.ReportServices import findReportByID, updateReport
+from ..Services.TrafficStatusInfoServices import findTrafficStatusInfoByID, deleteTrafficStatusInfo
 from pymongo.errors import PyMongoError
 
 data_blueprint = Blueprint('data',__name__)
@@ -273,6 +273,66 @@ def putTrainValTestValue(): # body: '_id', 'value'
         if not status: return 'Status is not created', 400
         status = status['statuses']
         return handlePutTrainValTest(data, status, body['value'])
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+@data_blueprint.get('/dataByUploader')
+def getDataByUploaderID():
+    try:
+        access_token = request.headers.get('Authorization')
+        if not access_token:
+            return 'Forbidden', 403
+        uploader_id = checkToken(access_token)[0]
+        res = findDataByUploaderID(uploader_id)
+        if not res:
+            return jsonify({"error": "Not Found"}), 404
+        
+        print(res)
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+@data_blueprint.get('/detail/<id>')
+def getDataDetail(id):
+    try:
+        access_token = request.headers.get('Authorization')
+        if not access_token:
+            return 'Forbidden', 403
+
+        data = findDataByID(id)
+        if not data:
+            return jsonify({"error": "Not Found"}), 404
+        data = data[0]
+        
+        user_id = checkToken(access_token)[0]
+        if data['uploaderID'] != user_id and not checkAdmin(access_token):
+            return 'Forbidden', 403
+
+        detail = {"data": data}
+
+        if data['type'] == 'text' and data.get('InfoID'):
+            text_info = findTextByID(data['InfoID'])
+            if text_info: 
+                detail["text"] = text_info[0]
+
+        elif data['type'] == 'image' and data.get('InfoID'):
+            img_info = findImageByID(data['InfoID'])
+            if img_info: 
+                detail["image"] = img_info[0]
+
+        if data.get('statusID'):
+            status_info = findTrafficStatusInfoByID(data['statusID'])
+            if status_info:
+                detail["status"] = status_info[0]
+
+        file_content, status = sendContent(data)
+        if status == 200:
+            detail["content"] = file_content
+        else:
+            detail["content_error"] = file_content
+        return detail
     except Exception as e:
         print(e)
         return str(e), 500
