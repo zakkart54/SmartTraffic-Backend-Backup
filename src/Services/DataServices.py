@@ -110,29 +110,29 @@ def updateData(body):
     body['uploaderID'] = ObjectId(body['uploaderID'])
     print(body['reportID'])
     body['_id'] = ObjectId(body['_id'])
-    if 'statusID' in body: body['statusID'] = ObjectId(body['statusID'])
-
     res = findDataByIDDAL(body['_id'])
     if res is None: 
         return jsonify({"error": "Not Found"}), 404
+    print(body['statusID'])
     if 'InfoID' in body: 
         if body['InfoID'] is not None: body['InfoID'] = ObjectId(body['InfoID'])
         else: body['InfoID'] = None
-    else: body['InfoID'] = ObjectId(res['infoID'])
+    else: body['InfoID'] = None
     if 'statusID' in body: 
         if body['statusID'] is not None: body['statusID'] = ObjectId(body['statusID'])
-        else: body['statusID'] = ObjectId(body['statusID']) 
+        else: body['statusID'] = None
     else: body['statusID'] = None
     if 'reportID' in body:
         if body['reportID'] is not None: body['reportID'] = ObjectId(body['reportID'])
         else: body['reportID'] = None
-    else: body['reportID'] = ObjectId(body['reportID']) 
+    else: body['reportID'] = None
     body = updateDataDAL(body)
     body['uploaderID'] = str(body['uploaderID'])
     if body['InfoID']is not None: body['InfoID'] = str(body['InfoID'])
     body['_id'] = str(body['_id'])
     if body['statusID']is not None: body['statusID'] = str(body['statusID'])
     if body['reportID']is not None: body['reportID'] = str(body['reportID'])
+    print(body)
     return body, 201
 
 def updateStatus(body):
@@ -141,7 +141,7 @@ def updateStatus(body):
     res = findDataByIDDAL(body['_id'])
     if res is None: 
         return jsonify({"error": "Not Found"}), 404
-    body['statusID'] = ObjectId('12341234123412341234')
+    body['statusID'] = ObjectId(body['statusID'])
     body = updateDataDAL(body)
     body['_id'] = str(body['_id'])
     body['uploaderID'] = str(body['uploaderID'])
@@ -190,6 +190,7 @@ def handleFormDataText(text):
     }
     resData = insertData(insertDataJSON)[0]
     resDataID = resData['_id']
+    print(resData)
     #["dataID", "source", "length", "contentType", "encoding"]
     #Trường Required
     if 'content' not in text: 
@@ -202,6 +203,7 @@ def handleFormDataText(text):
     #Xử lý viết file vào storage
     fileName = f'text_{time.time()}.txt'
     data = findDataByID(resDataID)[0]
+    print(f'data {data}')
     if data['type'] != 'text': return {'error': 'Wrong Data Type!'}, 400
     #Đưa vào db
     inputDb = {
@@ -211,6 +213,7 @@ def handleFormDataText(text):
     res = insertText(inputDb)
     data['InfoID'] = res[0]['_id']
     updateData(data)
+    print(data)
     #Xử lý viết file vào storage
     if res[1]==201:
         source = os.getenv('STORAGE') + '/texts/unverified/' + fileName
@@ -280,7 +283,7 @@ def handleEvaluate(id):
             content = file.read()
         overAllEval = NERTest(content)
         #Tự đưa status mới hoặc modify status ID, mới return
-        print('dddddddddd')
+        print(data)
         if 'statusID' not in data or data['statusID'] is None:
             status = insertTrafficStatusInfo({
                 'statuses':{

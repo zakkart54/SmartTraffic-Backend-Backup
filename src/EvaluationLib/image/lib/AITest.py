@@ -33,6 +33,7 @@ def TestForObstacles(img):
     negativeConfLowest = 1
     for det in results[0].boxes:
         conf = det.conf.item()  # Confidence score của bounding box
+        # 0.3 , 0.4 ,   0.58
         negativeConfSummary *=(1-conf)
         if negativeConfLowest > 1-conf: negativeConfLowest = 1-conf
     resNeg = (negativeConfSummary + negativeConfLowest)/2

@@ -41,7 +41,7 @@ def handleFindSegmentUsingCoor(lon,lat):
     print(lon,lat)
     nearestNode = findNodeOSMInSegmentbyCoor(lon,lat)[0]['id']
     print(nearestNode)
-    resSegment = findSegmentByNode(nearestNode)[0]
+    resSegment = findSegmentByNode(nearestNode)[0][0]
     return resSegment, 200
 
 def findSegmentByNode(nodeID):
@@ -54,7 +54,7 @@ def handleFindSegmentsUsingCoor(lon,lat):
     nearestNodes = findNodeOSMsInSegmentbyCoor(lon,lat)[0]
     resSegments = []
     for i in nearestNodes:
-        seg = findSegmentByNode(i['id'])[0]
+        seg = findSegmentByNode(i['id'])[0][0]
         if seg not in resSegments:
             resSegments.append(seg)
     return resSegments, 200
@@ -66,17 +66,23 @@ def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):
         node_ids = [n["id"] for n in nodes_in_bbox]
         if not node_ids:
             return [], 200
-        
+            
         segments = findSegmentsWithNodeIDs(node_ids)
-        current_hour = datetime.now().hour
+        current_hour = datetime.time().hour
+        
+        all_node_ids = set()
+        for seg in segments:
+            all_node_ids.update(int(n) for n in seg["nodes"])
+            
+        all_nodes = findNodesOSMByIDsDAL(list(all_node_ids))
+        node_dict = {n["id"]: n for n in all_nodes}
+        
+        for n in node_dict.values():
+            n.pop('_id', None)
 
         result = []
         for seg in segments:
             seg_node_ids = [int(n) for n in seg["nodes"]]
-            seg_nodes = findNodesOSMByIDsDAL(seg_node_ids)
-            for r in seg_nodes:
-                r.pop('_id', None)
-            seg_node_dict = {n["id"]: n for n in seg_nodes}
             status = seg.get("status", [])
             seg_obj = {
                 "id": seg["id"],
@@ -84,10 +90,9 @@ def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):
                 "status": status[current_hour] if current_hour < len(status) else {}
             }
 
-            # build coordinates
             for n_ref in seg_node_ids:
-                if n_ref in seg_node_dict:
-                    coords = seg_node_dict[n_ref]["location"]["coordinates"]
+                if n_ref in node_dict:
+                    coords = node_dict[n_ref]["location"]["coordinates"]
                     seg_obj["coordinates"].append(coords)
 
             result.append(seg_obj)

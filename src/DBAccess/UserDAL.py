@@ -43,6 +43,7 @@ def findRefreshTokenDAL(body):
             "username": body["username"],
             "expiredAt": {'$gt': datetime.now()}
         })
+        if refresh_token == None: return None
         del refresh_token['_id']
         return refresh_token
     except PyMongoError as e:

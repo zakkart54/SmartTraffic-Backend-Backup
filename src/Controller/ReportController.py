@@ -76,6 +76,20 @@ def getReportByUploaderID(id):
     except Exception as e:
         print(e)
         return str(e), 500
+    
+
+@report_blueprint.get('/uploader') #New, chưa thêm swagger
+def getReportByUploader():
+    try:
+        #Check Token xem có đúng uploader hay admin hay không
+        access_token = request.headers.get('Authorization')
+        if not access_token: return jsonify({"error": "Unauthorized"}), 401
+        uid =  checkToken(access_token)[0]
+        res = findReportByUploaderID(uid)
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500 
 
 
 # "uploaderID": {"bsonType": "objectId"},
@@ -99,7 +113,7 @@ def insertReportInstance():
             print('d')
             access_token = request.headers.get('Authorization')
             print(access_token)
-            if not access_token: return jsonify({"error": "Bad Request"}), 400 
+            if not access_token: return jsonify({"error": "Unauthorized"}), 401
             uploaderID = checkToken(access_token)[0]
             report['uploaderID'] = uploaderID
         
@@ -133,7 +147,7 @@ def changeReportInstance():
 
         if 'uploaderID' not in report:
             access_token = request.headers.get('Authorization')
-            if not access_token: return jsonify({"error": "Bad Request"}), 400 
+            if not access_token: return jsonify({"error": "Unauthorized"}), 401
             uploaderID = checkToken(access_token)[0]
             report['uploaderID'] = uploaderID
 

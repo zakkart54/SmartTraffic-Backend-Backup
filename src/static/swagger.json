@@ -103,6 +103,9 @@
       "$ref": "./notificationSwagger/gps.json"
     },
     "/notifications/user/{id}": {
+      "$ref": "./notificationSwagger/userID.json"
+    },
+    "/notifications/user": {
       "$ref": "./notificationSwagger/user.json"
     },
     "/image/{id}": {
@@ -173,6 +176,9 @@
     },
     "/report/autoVerify/{id}": {
       "$ref": "./reportSwagger/autoVerify.json"
+    },
+    "/report/uploader":{
+      "$ref": "./reportSwagger/user.json"
     }
   }
 }

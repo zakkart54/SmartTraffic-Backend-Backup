@@ -105,11 +105,24 @@ def createNotificationUsingGPS():
         print(e)
         return str(e), 500
     
-@notifications_blueprint.get('/user')
-def getNotificationsByUserID():
+@notifications_blueprint.get('/user/<id>')
+def getNotificationsByUserID(id):
     try:
         access_token = request.headers.get("Authorization")
-        if not access_token: return jsonify({"error": "Bad Request"}), 400 
+        if not access_token: return jsonify({"error": "Unauthorized"}), 401 
+        id = checkToken(access_token)[0]
+        res = findNotificationsByUserID(id)
+        return res
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+
+@notifications_blueprint.get('/user')
+def getNotificationsByUser():
+    try:
+        access_token = request.headers.get("Authorization")
+        if not access_token: return jsonify({"error": "Unauthorized"}), 401 
         id = checkToken(access_token)[0]
         res = findNotificationsByUserID(id)
         return res

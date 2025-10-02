@@ -1,0 +1,10 @@
+{
+  "get": {
+    "summary": "Get Reports Info By User Auth",
+    "tags": ["Reports"],
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

@@ -1,3 +1,4 @@
-sửa lại toàn bo insert va change services doi voi them dataID = null, kem them else neu k null
-insert/change data, report, img, text k can uploaderID.
-added phần chuyển vào train/val/test. cần thông qua evaluated, hoặc là validate cái report trước.
+curl -X 'GET' \
+  'http://localhost:5000/data/eval/68d76cdefa3b232747de7318' \
+  -H 'accept: */*' \
+  -H 'Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1ODk0ODQxOCwianRpIjoiMjc2M2I4ZDctOThlMy00MWFhLTg2MDktMDY1ZDkwODE1ZDc1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjY4Y2U4ZTFiYzBlMzU1OTAzMDQ5YjdkNiIsIm5iZiI6MTc1ODk0ODQxOCwiY3NyZiI6IjExZGQ1MWJjLTQzNmItNGU3Yy04ZjRlLWRmMzllNTdhOGY5MiIsImV4cCI6MTc1OTEyMTIxOH0.DVj44aLb4i-GrDvBBsctw09RocSfSRrDXDDo_5VzuGo'

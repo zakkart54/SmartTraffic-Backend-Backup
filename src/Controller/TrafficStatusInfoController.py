@@ -58,7 +58,7 @@ def getStatusInfoByUploaderID(id):
             print(dataList)
             res = []
             for data in dataList[0]:
-                statusInfo = findTrafficStatusInfoByID(data['InfoID'])[0]
+                statusInfo = findTrafficStatusInfoByID(data['statusID'])[0]
                 if statusInfo != {}:
                     res.append(statusInfo)
             return res
