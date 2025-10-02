@@ -1,0 +1,31 @@
+{
+  "post": {
+    "summary": "Manual Verify",
+    "tags": ["Reports"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "id": "objectId",
+                "valid": true,
+                "status": {
+                  "Obstacle": true,
+                  "Flooded": true,
+                  "Police": true,
+                  "TrafficJam": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

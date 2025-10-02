@@ -1,8 +1,7 @@
-from ultralytics import YOLO
-from torchvision.models import resnet50
+# from ultralytics import YOLO
+# from torchvision.models import resnet50
 import os
-def createDirs():
-    base_dir = "src/storage"
+def createDirs(base_dir):
 
 # Create the main directory
     os.makedirs(base_dir, exist_ok=True)
@@ -83,7 +82,8 @@ def createDirs():
 if __name__ == "__main__":
     print('downloading')
     
-    a = resnet50(weights='ResNet50_Weights.DEFAULT')
-    createDirs()
-    model = YOLO('yolo11n.pt')
+    # a = resnet50(weights='ResNet50_Weights.DEFAULT')
+    createDirs("storage")
+    createDirs("src/storage")
+    # model = YOLO('yolo11n.pt')
     print('downloaded')

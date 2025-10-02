@@ -3,6 +3,7 @@ from ..DBAccess.ReportDAL import *
 from ..Services.DataServices import handleEvaluate
 from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo, findTrafficStatusInfoByID
 from ..Services.SegmentServices import handleFindSegmentUsingCoor
+from ..Services.NotificationServices import handleNotificationWhenVerify
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -170,9 +171,11 @@ def handleVerify(report):
     text = None
     img = None
     if report['dataTextID'] != None: 
+        print('abbcc')
         currTextID = report['dataTextID']
         text = handleEvaluate(currTextID)[0]
     if report['dataImgID'] != None: 
+        print('bbbbbbbbcc')
         currImgID = report['dataImgID']
         img = handleEvaluate(currImgID)[0]
     harmony = {}
@@ -209,32 +212,78 @@ def handleVerify(report):
     if fcount < 2 and resEval > 0.8:
         report['qualified'] = True
         report['eval'] = resEval
-    #Thêm hoặc cập nhật lại status
-    if  not report['statusID'] or report['statusID']==None:
-        status = insertTrafficStatusInfo({
-            'statuses':{
-                'ObstaclesFlag': harmony['obstaclesEval']['status'],
-                'FloodedFlag': harmony['floodedEval']['status'],
-                'PoliceFlag': harmony['policeEval']['status'],
-                'TrafficJamFlag': harmony['trafficJamEval']['status']
-            }
-        })
-        report['statusID'] = status[0]['_id']
-        updateReport(report)
-    else:
-        status = updateTrafficStatusInfo({
-            '_id': report['statusID'],
-            'statuses':{
-                'ObstaclesFlag': harmony['obstaclesEval']['status'],
-                'FloodedFlag': harmony['floodedEval']['status'],
-                'PoliceFlag': harmony['policeEval']['status'],
-                'TrafficJamFlag': harmony['trafficJamEval']['status']
-            }
-        })
-        updateReport(report)
-    updateSegmentStatus(report['segmentID'])
-    return harmony, 200
+        if not report['statusID'] or report['statusID']==None:
+            status = insertTrafficStatusInfo({
+                'statuses':{
+                    'ObstaclesFlag': harmony['obstaclesEval']['status'],
+                    'FloodedFlag': harmony['floodedEval']['status'],
+                    'PoliceFlag': harmony['policeEval']['status'],
+                    'TrafficJamFlag': harmony['trafficJamEval']['status']
+                }
+            })
+            report['statusID'] = status[0]['_id']
+            updateReport(report)
+        else:
+            status = updateTrafficStatusInfo({
+                '_id': report['statusID'],
+                'statuses':{
+                    'ObstaclesFlag': harmony['obstaclesEval']['status'],
+                    'FloodedFlag': harmony['floodedEval']['status'],
+                    'PoliceFlag': harmony['policeEval']['status'],
+                    'TrafficJamFlag': harmony['trafficJamEval']['status']
+                }
+            })
+            updateReport(report)
+        updateSegmentStatus(report['segmentID'])
+    handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),resEval)
+    if resEval >0.8: return {'res': harmony,'noti': 'valid'}, 200
+    elif resEval >0.3: return {'res': harmony,'noti': 'needed validation'}, 200
+    else: {'res': harmony,'noti': 'invalid'}, 200
 
+def handleManual(report, body):
+    #body:
+    # {
+    #     'valid': True/False
+    #     'status':{
+    #         'Obstacle': True/False
+    #         'Flooded': True/False
+    #         'Police': True/False
+    #         'TrafficJam': True/False
+    #     }
+    # }
+    if not body['valid']: 
+        handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),0.1)
+        report['qualified'] = False
+        report['eval'] = 0.01
+    else: 
+        handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),0.9)
+        report['qualified'] = True
+        report['eval'] = 0.99
+        print(report)
+        if not report['statusID'] or report['statusID']==None:
+            status = insertTrafficStatusInfo({
+                'statuses':{
+                    'ObstaclesFlag': body['status']['Obstacle'],
+                    'FloodedFlag': body['status']['Flooded'],
+                    'PoliceFlag': body['status']['Police'],
+                    'TrafficJamFlag': body['status']['TrafficJam']
+                }
+            })
+            report['statusID'] = status[0]['_id']
+            updateReport(report)
+        else:
+            status = updateTrafficStatusInfo({
+                '_id': report['statusID'],
+                'statuses':{
+                    'ObstaclesFlag': body['status']['Obstacle'],
+                    'FloodedFlag': body['status']['Flooded'],
+                    'PoliceFlag': body['status']['Police'],
+                    'TrafficJamFlag': body['status']['TrafficJam']
+                }
+            })
+            updateReport(report)
+        updateSegmentStatus(report['segmentID'])
+    return 'ok', 200
 
 def updateSegmentStatus(id):
     def booltoint(a): return 1 if a else 0

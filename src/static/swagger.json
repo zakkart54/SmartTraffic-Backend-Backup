@@ -177,7 +177,10 @@
     "/report/autoVerify/{id}": {
       "$ref": "./reportSwagger/autoVerify.json"
     },
-    "/report/uploader":{
+    "/report/manualVerify": {
+      "$ref": "./reportSwagger/manualVerify.json"
+    },
+    "/report/uploader": {
       "$ref": "./reportSwagger/user.json"
     }
   }

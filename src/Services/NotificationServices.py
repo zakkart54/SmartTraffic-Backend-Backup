@@ -112,8 +112,16 @@ def findNotificationsByUserID(id):
         noti['userID'] = str(noti['userID'])
     return res, 200
 
-def handleNotificationWhenVerify(dataID, score):
-    noti = f"Data {dataID}"
+def handleNotificationWhenVerify(userID, reportID, score):
+    noti = f"Báo cáo {reportID}"
+    print(score)
     if score<0.3: noti += " Không được hợp lệ."
     elif score<0.8: noti += " Cần được xem xét lại bởi admin."
-    if score<0.3: noti += " hợp lệ."
+    else: noti += " hợp lệ."
+    print(noti)
+    res = insertNotifications({
+        'userID': [userID],
+        'type': "VALIDATION",
+        "content": noti
+    })
+    return res, 201

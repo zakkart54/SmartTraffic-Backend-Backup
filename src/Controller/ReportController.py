@@ -192,3 +192,14 @@ def autoVerifybyID(id):
         print(e)
         return str(e), 500
     
+
+@report_blueprint.post('/manualVerify') #Cần thêm swagger
+def manualVerify():
+    try:
+        body = request.get_json()
+        report = findReportByID(body['id'])[0]
+        return handleManual(report,body)
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
