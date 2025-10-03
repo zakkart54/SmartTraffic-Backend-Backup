@@ -29,9 +29,51 @@ def reportBeforeRequest():
 @report_blueprint.get('/')
 def getAllReport():
     try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
         access_token = request.headers.get('Authorization')
         if checkAdmin(access_token):
-            res = findAllReport()
+            res = findAllReport(limit,offset)
+            return res
+        else:
+            return 'Forbidden', 403 
+    except Exception as e:
+        print(e)
+        return str(e), 500
+@report_blueprint.get('/valid')
+def getAllvalidReport():
+    try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
+        access_token = request.headers.get('Authorization')
+        if checkAdmin(access_token):
+            res = findAllvalidReport(limit,offset)
+            return res
+        else:
+            return 'Forbidden', 403 
+    except Exception as e:
+        print(e)
+        return str(e), 500
+@report_blueprint.get('/neededValidation')
+def getAllneededValidationReport():
+    try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
+        access_token = request.headers.get('Authorization')
+        if checkAdmin(access_token):
+            res = findAllneededValidationReport(limit,offset)
+            return res
+        else:
+            return 'Forbidden', 403 
+    except Exception as e:
+        print(e)
+        return str(e), 500
+@report_blueprint.get('/invalid')
+def getAllinvalidReport():
+    try:
+        access_token = request.headers.get('Authorization')
+        if checkAdmin(access_token):
+            res = findAllinvalidReport()
             return res
         else:
             return 'Forbidden', 403 
@@ -202,7 +244,8 @@ def deleteReportID(id): #Phải xóa image, video kèm theo (nếu có) và xóa
 def autoVerifybyID(id):
     try:
         report = findReportByID(id)[0]
-        return handleVerify(report)
+        res =  handleVerify(report)
+        return res
     except Exception as e:
         print(e)
         return str(e), 500

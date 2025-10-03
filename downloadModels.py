@@ -2,9 +2,9 @@
 # from torchvision.models import resnet50
 import os
 def createDirs(base_dir):
-
+    print(os.getcwd())
 # Create the main directory
-    os.makedirs(base_dir, exist_ok=True)
+    os.makedirs(os.getcwd() +'/'+ base_dir, exist_ok=True)
     # Create subdirectories under storage
     subdirs = [
         # Images directories
@@ -77,13 +77,14 @@ def createDirs(base_dir):
     ]
     # Create each subdirectory
     for subdir in subdirs:
-        os.makedirs(os.path.join(base_dir, subdir), exist_ok=True)
+        print('a')
+        os.makedirs(os.path.join(os.getcwd() +'/'+ base_dir, subdir), exist_ok=True)
 
 if __name__ == "__main__":
     print('downloading')
     
     # a = resnet50(weights='ResNet50_Weights.DEFAULT')
-    createDirs("storage")
-    createDirs("src/storage")
+    createDirs("/storage")
+    createDirs("/src/storage")
     # model = YOLO('yolo11n.pt')
     print('downloaded')

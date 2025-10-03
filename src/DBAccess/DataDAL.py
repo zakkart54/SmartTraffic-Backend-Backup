@@ -3,11 +3,37 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from flask import jsonify, current_app
 
-def findAllDataDAL():
+def findAllDataDAL(limit=None,offset=None):
     try:
         client = current_app.config['DB_CLIENT']
         dataTable = client.db["data"]
         res = dataTable.find()
+        if offset: res = res.skip(offset)
+        if limit: res = res.limit(limit)
+        res = list(res)
+        return res
+    except PyMongoError as e:
+        raise e
+    
+def findAllImgDataDAL(limit=None,offset=None):
+    try:
+        client = current_app.config['DB_CLIENT']
+        dataTable = client.db["data"]
+        res = dataTable.find({"type": 'image'})
+        if offset: res = res.skip(offset)
+        if limit: res = res.limit(limit)
+        res = list(res)
+        return res
+    except PyMongoError as e:
+        raise e
+
+def findAllTextDataDAL(limit=None,offset=None):
+    try:
+        client = current_app.config['DB_CLIENT']
+        dataTable = client.db["data"]
+        res = dataTable.find({"type": 'text'})
+        if offset: res = res.skip(offset)
+        if limit: res = res.limit(limit)
         res = list(res)
         return res
     except PyMongoError as e:

@@ -32,9 +32,41 @@ def dataBeforeRequest(): #Check token người dùng
 @data_blueprint.get('/')
 def getAllData():
     try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
         access_token = request.headers.get('Authorization')
         if checkAdmin(access_token):
-            res = findAllData()
+            res = findAllData(limit,offset)
+            return res
+        else:
+            return 'Forbidden', 403
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+@data_blueprint.get('/img')
+def getAllImgData():
+    try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
+        access_token = request.headers.get('Authorization')
+        if checkAdmin(access_token):
+            res = findAllImgData(limit,offset)
+            return res
+        else:
+            return 'Forbidden', 403
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+@data_blueprint.get('/text')
+def getAllTextData():
+    try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
+        access_token = request.headers.get('Authorization')
+        if checkAdmin(access_token):
+            res = findAllTextData(limit,offset)
             return res
         else:
             return 'Forbidden', 403

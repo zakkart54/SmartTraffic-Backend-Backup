@@ -1,5 +1,6 @@
 from ..DBConfig.DBConnect import TrafficMongoClient
 from ..DBAccess.ReportDAL import *
+from ..DBAccess.DataDAL import *
 from ..Services.DataServices import handleEvaluate
 from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo, findTrafficStatusInfoByID
 from ..Services.SegmentServices import handleFindSegmentUsingCoor
@@ -13,8 +14,41 @@ client = TrafficMongoClient()
 reportTable = client.db["reports"]
 
 
-def findAllReport():
-    res = findAllReportDAL()
+def findAllReport(limit=None,offset=None):
+    res = findAllReportDAL(limit,offset)
+    for report in res:
+        report['_id'] = str(report['_id'])
+        if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
+        if report['dataTextID']: report['dataTextID'] = str(report['dataTextID'])
+        if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
+        if report['statusID']: report['statusID'] = str(report['statusID'])
+        report['segmentID'] = str(report['segmentID'])
+    return res, 200
+
+def findAllvalidReport(limit=None,offset=None):
+    res = findAllvalidReportDAL(limit,offset)
+    for report in res:
+        report['_id'] = str(report['_id'])
+        if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
+        if report['dataTextID']: report['dataTextID'] = str(report['dataTextID'])
+        if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
+        if report['statusID']: report['statusID'] = str(report['statusID'])
+        report['segmentID'] = str(report['segmentID'])
+    return res, 200
+
+def findAllneededValidationReport(limit=None,offset=None):
+    res = findAllneededValidationReportDAL(limit,offset)
+    for report in res:
+        report['_id'] = str(report['_id'])
+        if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
+        if report['dataTextID']: report['dataTextID'] = str(report['dataTextID'])
+        if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
+        if report['statusID']: report['statusID'] = str(report['statusID'])
+        report['segmentID'] = str(report['segmentID'])
+    return res, 200
+
+def findAllinvalidReport():
+    res = findAllinvalidReportDAL()
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -103,10 +137,12 @@ def insertReport(body):
         print(body)
         body['uploaderID'] = ObjectId(body['uploaderID'])
         if 'dataTextID' not in body: body['dataTextID'] = None
-        else: body['dataTextID'] = ObjectId(body['dataTextID'])
+        else:
+            if body['dataTextID']!= None: body['dataTextID'] = ObjectId(body['dataTextID'])
         if 'dataImgID' not in body: body['dataImgID'] = None
-        else: body['dataImgID'] = ObjectId(body['dataImgID'])
-        if 'eval' not in body: body["eval"] = 0.0
+        else: 
+            if body['dataImgID']!= None: body['dataImgID'] = ObjectId(body['dataImgID'])
+        if 'eval' not in body: body["eval"] = 0.5
         if 'qualified' not in body: body['qualified'] = False
         if 'createdDate' not in body: body['createdDate'] = datetime.today()
         if 'statusID' not in body: body['statusID'] = None
@@ -131,8 +167,8 @@ def updateReport(body):
     try:
         
         body['uploaderID'] = ObjectId(body['uploaderID'])
-        body['dataTextID'] = ObjectId(body['dataTextID'])
-        body['dataImgID'] = ObjectId(body['dataImgID'])
+        if body['dataTextID']!= None: body['dataTextID'] = ObjectId(body['dataTextID'])
+        if body['dataImgID']!= None: body['dataImgID'] = ObjectId(body['dataImgID'])
         if 'statusID' in body: body['statusID'] = ObjectId(body['statusID'])
         body['_id'] = ObjectId(body['_id'])
         res = findReportByIDDAL( body['_id'])
@@ -180,6 +216,7 @@ def handleVerify(report):
         img = handleEvaluate(currImgID)[0]
     harmony = {}
     fcount = 0
+    print('aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     if text == None and img == None: return jsonify({"error": "No Data included"}), 400
     elif text == None: harmony = img
     elif img == None: harmony = text
@@ -207,11 +244,12 @@ def handleVerify(report):
                     }
                     score += harmony[k]["score"]
     resEval = 0
+    print('aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     for k in harmony.keys():
         resEval += harmony[k]["score"]/4
     if fcount < 2 and resEval > 0.8:
         report['qualified'] = True
-        report['eval'] = resEval
+        
         if not report['statusID'] or report['statusID']==None:
             status = insertTrafficStatusInfo({
                 'statuses':{
@@ -222,7 +260,6 @@ def handleVerify(report):
                 }
             })
             report['statusID'] = status[0]['_id']
-            updateReport(report)
         else:
             status = updateTrafficStatusInfo({
                 '_id': report['statusID'],
@@ -233,28 +270,23 @@ def handleVerify(report):
                     'TrafficJamFlag': harmony['trafficJamEval']['status']
                 }
             })
-            updateReport(report)
         updateSegmentStatus(report['segmentID'])
+    report['eval'] = resEval
+    updateReport(report)
     handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),resEval)
     if resEval >0.8: return {'res': harmony,'noti': 'valid'}, 200
     elif resEval >0.3: return {'res': harmony,'noti': 'needed validation'}, 200
-    else: {'res': harmony,'noti': 'invalid'}, 200
+    else:
+        return {'res': harmony,'noti': 'invalid'}, 200
+
+
 
 def handleManual(report, body):
-    #body:
-    # {
-    #     'valid': True/False
-    #     'status':{
-    #         'Obstacle': True/False
-    #         'Flooded': True/False
-    #         'Police': True/False
-    #         'TrafficJam': True/False
-    #     }
-    # }
     if not body['valid']: 
         handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),0.1)
         report['qualified'] = False
         report['eval'] = 0.01
+        updateReport(report)
     else: 
         handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),0.9)
         report['qualified'] = True
@@ -269,6 +301,12 @@ def handleManual(report, body):
                     'TrafficJamFlag': body['status']['TrafficJam']
                 }
             })
+            text = findDataByIDDAL(report['dataTextID'])
+            text['statusID'] = status[0]['_id']
+            updateDataDAL(text)
+            img = findDataByIDDAL(report['dataImgID'])
+            img['statusID'] = status[0]['_id']
+            updateDataDAL(img)
             report['statusID'] = status[0]['_id']
             updateReport(report)
         else:
@@ -281,6 +319,12 @@ def handleManual(report, body):
                     'TrafficJamFlag': body['status']['TrafficJam']
                 }
             })
+            text = findDataByIDDAL(report['dataTextID'])
+            text['statusID'] = report['statusID']
+            updateDataDAL(text)
+            img = findDataByIDDAL(report['dataImgID'])
+            img['statusID'] = report['statusID']
+            updateDataDAL(img)
             updateReport(report)
         updateSegmentStatus(report['segmentID'])
     return 'ok', 200

@@ -20,8 +20,28 @@ import base64
 #Toàn bộ dữ liệu không phải string thì update lại
 
 
-def findAllData():
-    res = findAllDataDAL()
+def findAllData(limit=None,offset=None):
+    res = findAllDataDAL(limit,offset)
+    for data in res:
+        data['_id'] = str(data['_id'])
+        data['uploaderID'] = str(data['uploaderID'])
+        if data['InfoID']is not None: data['InfoID'] = str(data['InfoID'])
+        if data['statusID']is not None: data['statusID'] = str(data['statusID'])
+        if data['reportID'] is not None: data['reportID'] = str(data['reportID'])
+    return res, 200
+
+def findAllImgData(limit=None,offset=None):
+    res = findAllImgDataDAL(limit,offset)
+    for data in res:
+        data['_id'] = str(data['_id'])
+        data['uploaderID'] = str(data['uploaderID'])
+        if data['InfoID']is not None: data['InfoID'] = str(data['InfoID'])
+        if data['statusID']is not None: data['statusID'] = str(data['statusID'])
+        if data['reportID'] is not None: data['reportID'] = str(data['reportID'])
+    return res, 200
+
+def findAllTextData(limit=None,offset=None):
+    res = findAllTextDataDAL(limit,offset)
     for data in res:
         data['_id'] = str(data['_id'])
         data['uploaderID'] = str(data['uploaderID'])
@@ -235,29 +255,33 @@ def handleEvaluate(id):
         obstaclesEval = TestForObstacles(imgSrc)
         trafficJamEval = TestForTJam(imgSrc)
         floodedEval = TestForFlooded(imgSrc)
-        #Tự đưa status mới hoặc modify status ID, mới return 
-        if 'statusID' not in data or data['statusID'] is None:
-            status = insertTrafficStatusInfo({
-                'statuses':{
-                    'ObstaclesFlag': obstaclesEval[0],
-                    'FloodedFlag': floodedEval[0],
-                    'PoliceFlag': policeEval[0],
-                    'TrafficJamFlag': trafficJamEval[0]
-                }
-            })
-            data['statusID'] = status[0]['_id']
-            updateData(data)
-        else:
-            status = updateTrafficStatusInfo({
-                '_id': data['statusID'],
-                'statuses':{
-                    'ObstaclesFlag': obstaclesEval[0],
-                    'FloodedFlag': floodedEval[0],
-                    'PoliceFlag': policeEval[0],
-                    'TrafficJamFlag': trafficJamEval[0]
-                }
-            })
-            updateData(data)
+        resEval = policeEval[1] + obstaclesEval[1] + trafficJamEval[1] + floodedEval[1]
+        resEval = resEval/4
+        if resEval > 0.8:
+            data['processed'] = True
+            data['processed_time'] = datetime.date()
+            if 'statusID' not in data or data['statusID'] is None:
+                status = insertTrafficStatusInfo({
+                    'statuses':{
+                        'ObstaclesFlag': obstaclesEval[0],
+                        'FloodedFlag': floodedEval[0],
+                        'PoliceFlag': policeEval[0],
+                        'TrafficJamFlag': trafficJamEval[0]
+                    }
+                })
+                data['statusID'] = status[0]['_id']
+                updateData(data)
+            else:
+                status = updateTrafficStatusInfo({
+                    '_id': data['statusID'],
+                    'statuses':{
+                        'ObstaclesFlag': obstaclesEval[0],
+                        'FloodedFlag': floodedEval[0],
+                        'PoliceFlag': policeEval[0],
+                        'TrafficJamFlag': trafficJamEval[0]
+                    }
+                })
+                updateData(data)
         return ({
             "policeEval": 
             {
@@ -285,32 +309,35 @@ def handleEvaluate(id):
         overAllEval = NERTest(content)
         #Tự đưa status mới hoặc modify status ID, mới return
         print(data)
-        if 'statusID' not in data or data['statusID'] is None:
-            status = insertTrafficStatusInfo({
-                'statuses':{
-                    'ObstaclesFlag': overAllEval['OBSTACLE']['detected'],
-                    'FloodedFlag': overAllEval['FLOOD']['detected'],
-                    'PoliceFlag': overAllEval['POLICE']['detected'],
-                    'TrafficJamFlag': overAllEval['JAM']['detected']
-                }
-            })
-            data['statusID'] = status[0]['_id']
-            print('textdata1')
-            print(data )
-            updateData(data)
-        else:
-            status = updateTrafficStatusInfo({
-                '_id': data['statusID'],
-                'statuses':{
-                    'ObstaclesFlag': overAllEval['OBSTACLE']['detected'],
-                    'FloodedFlag': overAllEval['FLOOD']['detected'],
-                    'PoliceFlag': overAllEval['POLICE']['detected'],
-                    'TrafficJamFlag': overAllEval['JAM']['detected']
-                }
-            })
-            print('textdata2')
-            print(data )
-            updateData(data)
+        resEval = overAllEval['POLICE']['score'] + overAllEval['OBSTACLE']['score'] + overAllEval['FLOOD']['score'] + overAllEval['JAM']['score']
+        resEval = resEval/4
+        if resEval > 0.8:
+            if 'statusID' not in data or data['statusID'] is None:
+                status = insertTrafficStatusInfo({
+                    'statuses':{
+                        'ObstaclesFlag': overAllEval['OBSTACLE']['detected'],
+                        'FloodedFlag': overAllEval['FLOOD']['detected'],
+                        'PoliceFlag': overAllEval['POLICE']['detected'],
+                        'TrafficJamFlag': overAllEval['JAM']['detected']
+                    }
+                })
+                data['statusID'] = status[0]['_id']
+                print('textdata1')
+                print(data )
+                updateData(data)
+            else:
+                status = updateTrafficStatusInfo({
+                    '_id': data['statusID'],
+                    'statuses':{
+                        'ObstaclesFlag': overAllEval['OBSTACLE']['detected'],
+                        'FloodedFlag': overAllEval['FLOOD']['detected'],
+                        'PoliceFlag': overAllEval['POLICE']['detected'],
+                        'TrafficJamFlag': overAllEval['JAM']['detected']
+                    }
+                })
+                print('textdata2')
+                print(data )
+                updateData(data)
         return ({
             "policeEval": 
             {
