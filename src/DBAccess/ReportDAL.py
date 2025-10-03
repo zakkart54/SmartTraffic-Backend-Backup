@@ -36,7 +36,6 @@ def findAllneededValidationReportDAL(limit=None,offset=None):
         reportTable = client.db["reports"]
         res = reportTable.find({"eval": {"$gte": 0.3, "$lte": 0.8 }})
         total = reportTable.count_documents({"eval": {"$gte": 0.3, "$lte": 0.8 }})
-        print(total)
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
@@ -50,7 +49,6 @@ def findAllinvalidReportDAL(limit=None,offset=None):
         reportTable = client.db["reports"]
         res = reportTable.find({"eval": {"$lt": 0.3}})
         total = reportTable.count_documents({"eval": {"$lt": 0.3}})
-        print(total)
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
@@ -70,13 +68,16 @@ def findMax100VerifiedReportDAL():
     except PyMongoError as e:
         raise e
 
-def findAllUnqualifiedReportDAL():
+def findAllUnqualifiedReportDAL(limit=None,offset=None):
     try:
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
         res = reportTable.find({'qualified': False})
+        total = reportTable.count_documents({'qualified': False})
+        if offset: res = res.skip(offset)
+        if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
 

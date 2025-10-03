@@ -47,8 +47,8 @@ def findAllneededValidationReport(limit=None,offset=None):
         report['segmentID'] = str(report['segmentID'])
     return {"total": total, "data": res}, 200
 
-def findAllinvalidReport():
-    res, total = findAllinvalidReportDAL()
+def findAllinvalidReport(limit=None,offset=None):
+    res, total = findAllinvalidReportDAL(limit,offset)
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -70,8 +70,8 @@ def findMax100VerifiedReport():
         report['segmentID'] = str(report['segmentID'])
     return res, 200
 
-def findAllUnqualifiedReport():
-    res = findAllUnqualifiedReportDAL()
+def findAllUnqualifiedReport(limit=None,offset=None):
+    res, total = findAllUnqualifiedReportDAL(limit,offset)
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -79,7 +79,7 @@ def findAllUnqualifiedReport():
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findReportByID(id):
 

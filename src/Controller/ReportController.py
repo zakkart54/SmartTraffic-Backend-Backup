@@ -71,9 +71,11 @@ def getAllneededValidationReport():
 @report_blueprint.get('/invalid')
 def getAllinvalidReport():
     try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
         access_token = request.headers.get('Authorization')
         if checkAdmin(access_token):
-            res = findAllinvalidReport()
+            res = findAllinvalidReport(limit,offset)
             return res
         else:
             return 'Forbidden', 403 
@@ -84,9 +86,11 @@ def getAllinvalidReport():
 @report_blueprint.get('/notQualified')
 def getAllUnqualifiedReport():
     try:
+        limit = request.args.get('limit',type=int)
+        offset = request.args.get('offset',type=int)
         access_token = request.headers.get('Authorization')
         if checkAdmin(access_token):
-            res = findAllUnqualifiedReport()
+            res = findAllUnqualifiedReport(limit,offset)
             return res
         else:
             return 'Forbidden', 403 
