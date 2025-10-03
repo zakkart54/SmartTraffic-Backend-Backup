@@ -10,8 +10,9 @@ def findAllReportDAL(limit=None,offset=None):
         res = reportTable.find()
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
+        total = reportTable.estimated_document_count()
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
 
@@ -21,10 +22,11 @@ def findAllvalidReportDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
         res = reportTable.find({"qualified": True})
+        total = reportTable.count_documents({"qualified": True})
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
     
@@ -33,10 +35,12 @@ def findAllneededValidationReportDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
         res = reportTable.find({"eval": {"$gte": 0.3, "$lte": 0.8 }})
+        total = reportTable.count_documents({"eval": {"$gte": 0.3, "$lte": 0.8 }})
+        print(total)
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
     
@@ -45,8 +49,12 @@ def findAllinvalidReportDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
         res = reportTable.find({"eval": {"$lt": 0.3}})
+        total = reportTable.count_documents({"eval": {"$lt": 0.3}})
+        print(total)
+        if offset: res = res.skip(offset)
+        if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
 

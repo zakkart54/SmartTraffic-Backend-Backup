@@ -15,7 +15,7 @@ reportTable = client.db["reports"]
 
 
 def findAllReport(limit=None,offset=None):
-    res = findAllReportDAL(limit,offset)
+    res, total = findAllReportDAL(limit,offset)
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -23,10 +23,10 @@ def findAllReport(limit=None,offset=None):
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findAllvalidReport(limit=None,offset=None):
-    res = findAllvalidReportDAL(limit,offset)
+    res, total = findAllvalidReportDAL(limit,offset)
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -34,10 +34,10 @@ def findAllvalidReport(limit=None,offset=None):
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findAllneededValidationReport(limit=None,offset=None):
-    res = findAllneededValidationReportDAL(limit,offset)
+    res, total = findAllneededValidationReportDAL(limit,offset)
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -45,10 +45,10 @@ def findAllneededValidationReport(limit=None,offset=None):
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findAllinvalidReport():
-    res = findAllinvalidReportDAL()
+    res, total = findAllinvalidReportDAL()
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -56,7 +56,7 @@ def findAllinvalidReport():
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
     
 def findMax100VerifiedReport():
