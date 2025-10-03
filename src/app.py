@@ -29,7 +29,7 @@ app = Flask(__name__)
 app.config['DB_CLIENT'] = TrafficMongoClient()
 
 #Add CORS into app
-CORS(app)
+CORS(app, supports_credentials=True)
 
 #Config JWT
 load_dotenv()

@@ -2,6 +2,7 @@ from ..DBConfig.DBConnect import TrafficMongoClient
 from ..DBAccess.DataDAL import *
 from ..Services.ImageServices import insertImage, findImageByID, handleFormDataforImage
 from ..Services.TextServices import insertText, findTextByID
+from ..Services.TrafficStatusInfoServices import findTrafficStatusInfoByID
 from ..Services.TrafficStatusInfoServices import updateTrafficStatusInfo, insertTrafficStatusInfo
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
@@ -426,3 +427,36 @@ def sendContent(data):
         "source": source,
         "content": content
     }, 200
+    
+def findDataDetail(data_id):
+    try:
+        if not data_id:
+            return None
+        data_detail = None
+        data_records = findDataByID(data_id)
+        if data_records:
+            data = data_records[0]
+            data_detail = {"data": data}
+
+            if data['type'] == 'text' and data.get('InfoID'):
+                text_info = findTextByID(data['InfoID'])
+                if text_info: 
+                    data_detail["text"] = text_info[0]
+
+            elif data['type'] == 'image' and data.get('InfoID'):
+                img_info = findImageByID(data['InfoID'])
+                if img_info: 
+                    data_detail["image"] = img_info[0]
+
+            if data.get('statusID'):
+                status_info = findTrafficStatusInfoByID(data['statusID'])
+                if status_info:
+                    data_detail["status"] = status_info[0]
+
+            file_content, status = sendContent(data)
+            if status == 200:
+                data_detail["content"] = file_content
+            else:
+                data_detail["content_error"] = file_content
+    except PyMongoError as e:
+        raise e

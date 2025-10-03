@@ -18,6 +18,8 @@ import shutil
 
 @data_blueprint.before_request
 def dataBeforeRequest(): #Check token người dùng
+    if request.method == "OPTIONS":
+        return "", 200
     access_token = request.headers.get('Authorization')
     if not access_token:
         return 'No access token in header', 401

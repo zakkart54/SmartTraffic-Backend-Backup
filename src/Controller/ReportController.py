@@ -1,8 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, copy_current_request_context
 from ..Services.ReportServices import *
+from ..Services.DataServices import findImageByID,findTextByID, findDataByID, sendContent
 from ..Services.UserServices import checkAdmin, checkToken
-from ..Services.DataServices import deleteData, handleEvaluate
+from ..Services.DataServices import deleteData, findDataDetail
 from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo
+import threading
 from pymongo.errors import PyMongoError
 import time
 report_blueprint = Blueprint('report',__name__)
@@ -11,6 +13,8 @@ report_blueprint = Blueprint('report',__name__)
 
 @report_blueprint.before_request
 def reportBeforeRequest():
+    if request.method == "OPTIONS":
+        return "", 200
     #Check Access Token
     access_token = request.headers.get('Authorization')
     if not access_token:
@@ -107,7 +111,7 @@ def insertReportInstance():
         #Kiểm tra sự tồn tại của body
         if ("dataImgID" not in report and "dataTextID" not in report) or "lat" not in report or 'lon' not in report:
             return jsonify({"error": "Bad Requestt"}), 400
-        print(report)
+
         #Trường Required
         if 'uploaderID' not in report:
             print('d')
@@ -126,6 +130,17 @@ def insertReportInstance():
                 return jsonify({"error": "Wrong key provided"}), 400 
         
         res = insertReport(report)
+        
+        @copy_current_request_context
+        def runAutoVerifyInternal(id):
+            try:
+                report = findReportByID(id)[0]
+                handleVerify(report)
+            except Exception as e:
+                print("Auto verify failed:", e)
+        
+        threading.Thread(target=runAutoVerifyInternal, args=(report["_id"],)).start()
+        
         return res
     except Exception as e:
         print(e)
@@ -203,3 +218,25 @@ def manualVerify():
         print(e)
         return str(e), 500
     
+@report_blueprint.get('detail/<id>')
+def getReportDetail(id):
+    try:
+        res = findReportByID(id)
+        if not res:
+            return jsonify({"error": "Report not found"}), 404
+        report = res[0]
+
+        access_token = request.headers.get('Authorization')
+        if not access_token or not (checkAdmin(access_token) or checkToken(access_token)[0] == report['uploaderID']):
+            return 'Forbidden', 403
+        data_detail = findDataDetail(report.get('dataID'))
+
+        result = {"report": report}
+        if data_detail:
+            result["data_detail"] = data_detail
+
+        return result
+
+    except Exception as e:
+        print(e)
+        return str(e), 500
