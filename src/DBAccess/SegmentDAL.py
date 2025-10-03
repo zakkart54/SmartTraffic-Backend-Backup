@@ -22,6 +22,26 @@ def findSegmentByIDDAL(id):
     except PyMongoError as e:
         raise e
 
+def findSegmentsByIDsDAL(segment_ids: list):
+    try:
+        client = current_app.config['DB_CLIENT']
+        segmentTable = client.db["segments"]
+        cursor = segmentTable.find(
+            {"id": {"$in": segment_ids}}, 
+            {"tags.name": 1, "tags.ref": 1, "id": 1}
+        )
+        segments = {}
+        for seg in cursor:
+            seg_id = str(seg.get("id"))
+            tags = seg.get("tags", {})
+            segments[seg_id] = {
+                "name": tags.get("name"),
+                "ref": tags.get("ref")
+            }
+        return segments
+    except PyMongoError as e:
+        raise e
+
 def findSegmentByNodeDAL(nodeID):
     try:
         client = current_app.config['DB_CLIENT']

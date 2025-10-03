@@ -3,7 +3,7 @@ from ..DBAccess.ReportDAL import *
 from ..DBAccess.DataDAL import *
 from ..Services.DataServices import handleEvaluate
 from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo, findTrafficStatusInfoByID
-from ..Services.SegmentServices import handleFindSegmentUsingCoor
+from ..Services.SegmentServices import handleFindSegmentUsingCoor, findSegmentsByIDs
 from ..Services.NotificationServices import handleNotificationWhenVerify
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
@@ -15,7 +15,9 @@ reportTable = client.db["reports"]
 
 
 def findAllReport(limit=None,offset=None):
-    res, total = findAllReportDAL(limit,offset)
+    res, total = findAllReportDAL(limit, offset)
+    segment_ids = list({str(r['segmentID']) for r in res if r.get('segmentID')})
+    segments = findSegmentsByIDs(segment_ids)[0]
     for report in res:
         report['_id'] = str(report['_id'])
         if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
@@ -23,6 +25,8 @@ def findAllReport(limit=None,offset=None):
         if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
         if report['statusID']: report['statusID'] = str(report['statusID'])
         report['segmentID'] = str(report['segmentID'])
+        segment_id = report.get('segmentID')
+        report['segment'] = segments.get(segment_id, {})
     return {"total": total, "data": res}, 200
 
 def findAllvalidReport(limit=None,offset=None):

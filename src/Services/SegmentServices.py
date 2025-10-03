@@ -20,6 +20,14 @@ def findSegmentByID(id):
     del res['_id']
     if res == None: return {}, 200
     return res, 200
+
+def findSegmentsByIDs(ids: list):
+    try:
+        res = findSegmentsByIDsDAL(ids)
+        if res == None: return {}, 200
+        return res, 200
+    except PyMongoError as e:
+        raise e
     
 def findSegmentByCoor(lon,lat):
     res = findNodeOSMInSegmentbyCoor(lon,lat)[0]
