@@ -376,7 +376,7 @@ def handlePutTrainValTest(data, status, value):
         text = findTextByID(data['InfoID'])[0]
     match value:
         case 'train':
-            data['trainValTest'] = 1
+            data['TrainValTest'] = 1
             #copy folder
             if data['type'] == 'image':
                 for i in range(4):
@@ -385,7 +385,7 @@ def handlePutTrainValTest(data, status, value):
                 for i in range(4):
                     if text is not None: shutil.copy(os.getenv('STORAGE') + '/texts/unverified/' + text['source'],os.getenv('STORAGE') + '/texts/v_train/' + folders[i] + folderOrder[i])
         case 'val':
-            data['trainValTest'] = 2
+            data['TrainValTest'] = 2
             #copy folder
             if data['type'] == 'image':
                 for i in range(4):
@@ -394,7 +394,7 @@ def handlePutTrainValTest(data, status, value):
                 for i in range(4):
                     if text is not None: shutil.copy(os.getenv('STORAGE') + '/texts/unverified/' + text['source'],os.getenv('STORAGE') + '/texts/v_val/' + folders[i] + folderOrder[i])
         case 'test':
-            data['trainValTest'] = 3
+            data['TrainValTest'] = 3
             #copy folder
             if data['type'] == 'image':
                 for i in range(4):
