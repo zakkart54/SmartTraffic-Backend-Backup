@@ -136,10 +136,23 @@ def insertUser(body):
 
 def updateUser(body):
     try:
-        
         if body['DoB']: body["DoB"] = datetime.strptime(body["DoB"],"%Y/%m/%d")
         body['_id'] = ObjectId(body['_id'])
         body["password"] = hashPassword(body["username"],body["password"])
+        res = findUserByIDDAL( body['_id'])
+        if res == None: 
+            return jsonify({"error": "Not Found"}), 40
+        body = updateUserDAL(body)
+        del body['_id']
+        del body['password']
+        return body, 200
+    except PyMongoError as e:
+        raise e
+    
+def updateUserProfileService(body):
+    try:
+        if body['DoB']: body["DoB"] = datetime.strptime(body["DoB"],"%Y/%m/%d")
+        body['_id'] = ObjectId(body['_id'])
         res = findUserByIDDAL( body['_id'])
         if res == None: 
             return jsonify({"error": "Not Found"}), 40

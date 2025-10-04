@@ -156,7 +156,7 @@ def updateUserProfile():
                 return jsonify({"error": "Wrong key provided"}), 400 
             compareUser[key] = user[key]
 
-        res = updateUser(compareUser)
+        res = updateUserProfileService(compareUser)
         return res
     except Exception as e:
         print(e)
