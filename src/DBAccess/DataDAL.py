@@ -8,10 +8,11 @@ def findAllDataDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         dataTable = client.db["data"]
         res = dataTable.find()
+        total = dataTable.estimated_document_count()
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
     
@@ -20,10 +21,11 @@ def findAllImgDataDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         dataTable = client.db["data"]
         res = dataTable.find({"type": 'image'})
+        total = dataTable.count_documents({"type": 'image'})
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
 
@@ -32,10 +34,11 @@ def findAllTextDataDAL(limit=None,offset=None):
         client = current_app.config['DB_CLIENT']
         dataTable = client.db["data"]
         res = dataTable.find({"type": 'text'})
+        total = dataTable.count_documents({"type": 'text'})
         if offset: res = res.skip(offset)
         if limit: res = res.limit(limit)
         res = list(res)
-        return res
+        return res, total
     except PyMongoError as e:
         raise e
 

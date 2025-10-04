@@ -21,34 +21,34 @@ import base64
 
 
 def findAllData(limit=None,offset=None):
-    res = findAllDataDAL(limit,offset)
+    res, total = findAllDataDAL(limit,offset)
     for data in res:
         data['_id'] = str(data['_id'])
         data['uploaderID'] = str(data['uploaderID'])
         if data['InfoID']is not None: data['InfoID'] = str(data['InfoID'])
         if data['statusID']is not None: data['statusID'] = str(data['statusID'])
         if data['reportID'] is not None: data['reportID'] = str(data['reportID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findAllImgData(limit=None,offset=None):
-    res = findAllImgDataDAL(limit,offset)
+    res, total = findAllImgDataDAL(limit,offset)
     for data in res:
         data['_id'] = str(data['_id'])
         data['uploaderID'] = str(data['uploaderID'])
         if data['InfoID']is not None: data['InfoID'] = str(data['InfoID'])
         if data['statusID']is not None: data['statusID'] = str(data['statusID'])
         if data['reportID'] is not None: data['reportID'] = str(data['reportID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findAllTextData(limit=None,offset=None):
-    res = findAllTextDataDAL(limit,offset)
+    res, total = findAllTextDataDAL(limit,offset)
     for data in res:
         data['_id'] = str(data['_id'])
         data['uploaderID'] = str(data['uploaderID'])
         if data['InfoID']is not None: data['InfoID'] = str(data['InfoID'])
         if data['statusID']is not None: data['statusID'] = str(data['statusID'])
         if data['reportID'] is not None: data['reportID'] = str(data['reportID'])
-    return res, 200
+    return {"total": total, "data": res}, 200
 
 def findDataByID(id):
     res = findDataByIDDAL(id)
