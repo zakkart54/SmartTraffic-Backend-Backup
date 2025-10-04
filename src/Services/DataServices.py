@@ -257,9 +257,10 @@ def handleEvaluate(id):
         floodedEval = TestForFlooded(imgSrc)
         resEval = policeEval[1] + obstaclesEval[1] + trafficJamEval[1] + floodedEval[1]
         resEval = resEval/4
-        if resEval > 0.8:
+        # if resEval > 0.8:
+        if True:
             data['processed'] = True
-            data['processed_time'] = datetime.date()
+            data['processed_time'] = datetime.now()
             if 'statusID' not in data or data['statusID'] is None:
                 status = insertTrafficStatusInfo({
                     'statuses':{
@@ -301,7 +302,7 @@ def handleEvaluate(id):
                 "score": float(floodedEval[1])
             }}, 200)
     elif data['type'] == 'text':
-        print('abc')
+        print('test text')
         text = findTextByID(infoID)[0]
         textSrc = os.getenv('STORAGE') + '/texts/unverified/' + text['source']
         with open(textSrc, 'r', encoding='utf-8') as file:
@@ -311,7 +312,7 @@ def handleEvaluate(id):
         print(data)
         resEval = overAllEval['POLICE']['score'] + overAllEval['OBSTACLE']['score'] + overAllEval['FLOOD']['score'] + overAllEval['JAM']['score']
         resEval = resEval/4
-        if resEval > 0.8:
+        if True:
             if 'statusID' not in data or data['statusID'] is None:
                 status = insertTrafficStatusInfo({
                     'statuses':{
