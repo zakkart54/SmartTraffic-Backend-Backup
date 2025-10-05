@@ -306,10 +306,10 @@ def handleManual(report, body):
                 }
             })
             text = findDataByIDDAL(report['dataTextID'])
-            text['statusID'] = status[0]['_id']
+            text['statusID'] = ObjectId(status[0]['_id'])
             updateDataDAL(text)
             img = findDataByIDDAL(report['dataImgID'])
-            img['statusID'] = status[0]['_id']
+            img['statusID'] = ObjectId(status[0]['_id'])
             updateDataDAL(img)
             report['statusID'] = status[0]['_id']
             updateReport(report)
@@ -324,10 +324,10 @@ def handleManual(report, body):
                 }
             })
             text = findDataByIDDAL(report['dataTextID'])
-            text['statusID'] = report['statusID']
+            text['statusID'] = ObjectId(report['statusID'])
             updateDataDAL(text)
             img = findDataByIDDAL(report['dataImgID'])
-            img['statusID'] = report['statusID']
+            img['statusID'] = ObjectId(report['statusID'])
             updateDataDAL(img)
             updateReport(report)
         updateSegmentStatus(report['segmentID'])

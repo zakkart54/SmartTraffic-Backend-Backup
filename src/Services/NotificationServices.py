@@ -80,6 +80,7 @@ def handleNotificationUsingGPS(lon,lat,uid):
     for i in segs:
         NotiContent = 'Hiện nay ở đoạn đường '
         status = i['status'][currHour]
+        segmentName = i['tags']['name'] if 'name' in i['tags'] else str(i['id'])
         if status != blankStatus:
             print('true')
             textAdded = [
@@ -89,7 +90,7 @@ def handleNotificationUsingGPS(lon,lat,uid):
                 ' Có vật cản' if status['OBSTACLE'] else ''
             ]
             NotiContent += i['tags']['name']
-            NotiContent += ' với ID là ' + str(i['id'])
+            NotiContent += ' với ID là ' + segmentName + '.'
             for i in textAdded:
                 NotiContent += i
             bodyNoti = {
