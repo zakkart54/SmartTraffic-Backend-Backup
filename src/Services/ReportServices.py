@@ -9,6 +9,7 @@ from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from datetime import datetime
 from flask import jsonify
+from zoneinfo import ZoneInfo
 client = TrafficMongoClient()
 
 reportTable = client.db["reports"]
@@ -147,7 +148,7 @@ def insertReport(body):
             if body['dataImgID']!= None: body['dataImgID'] = ObjectId(body['dataImgID'])
         if 'eval' not in body: body["eval"] = 0.5
         if 'qualified' not in body: body['qualified'] = False
-        if 'createdDate' not in body: body['createdDate'] = datetime.today()
+        if 'createdDate' not in body: body['createdDate'] = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
         if 'statusID' not in body: body['statusID'] = None
         else:
             if body['statusID']!= None: body['statusID'] = ObjectId(body['statusID'])
