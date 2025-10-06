@@ -24,6 +24,12 @@ def findNodeOSMInSegmentbyCoor(a,b):
     if res == None: return {}, 200
     del res['_id']
     return res, 200
+
+def findNodeOSMsInSegmentbyCoor500(a,b):
+    res = findNodeOSMsInSegmentbyCoor500DAL(a,b)
+    for i in res:
+        del i['_id']
+    return res, 200
     
 
 def findNodeOSMsInSegmentbyCoor(a,b):
@@ -33,7 +39,6 @@ def findNodeOSMsInSegmentbyCoor(a,b):
     return res, 200
 
 def findNodeOSMByID(id):
-    print(id)
     res = findNodeOSMByIDDAL(id)
     if res == None: return {}, 200
     del res['_id']

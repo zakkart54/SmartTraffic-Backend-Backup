@@ -182,6 +182,9 @@
     },
     "/report/uploader": {
       "$ref": "./reportSwagger/user.json"
+    },
+    "/report/gps": {
+      "$ref": "./reportSwagger/gps.json"
     }
   }
 }

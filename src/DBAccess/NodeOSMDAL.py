@@ -54,6 +54,27 @@ def findNodeOSMInSegmentbyCoorDAL(a,b):
     except PyMongoError as e:
         raise e
 
+def findNodeOSMsInSegmentbyCoor500DAL(a,b):
+    try:
+        client = current_app.config['DB_CLIENT']
+        nodeOSMTable = client.db["nodes"]
+        res = nodeOSMTable.find({
+            "type": "node",
+            "location": {
+                "$near": {
+                    "$geometry": {
+                        "type": "Point",
+                        "coordinates": [a, b]
+                    },
+                    "$maxDistance": 1000
+                }
+            },
+            "belongs_to_segments": {"$exists": True, "$ne": []}
+        }).limit(50)
+        return list(res)
+    except PyMongoError as e:
+        raise e
+
 def findNodeOSMsInSegmentbyCoorDAL(a,b):
     try:
         client = current_app.config['DB_CLIENT']

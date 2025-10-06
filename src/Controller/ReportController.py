@@ -4,6 +4,7 @@ from ..Services.DataServices import findImageByID,findTextByID, findDataByID, se
 from ..Services.UserServices import checkAdmin, checkToken
 from ..Services.DataServices import deleteData, findDataDetail
 from ..Services.TrafficStatusInfoServices import insertTrafficStatusInfo, updateTrafficStatusInfo
+from ..Services.SegmentServices import handleFindSegmentUsingCoor500
 import threading
 from pymongo.errors import PyMongoError
 import time
@@ -284,6 +285,19 @@ def getReportDetail(id):
 
         return result
 
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
+
+@report_blueprint.post('gps')
+def findReportByGPS500():
+    try:
+        body = request.get_json()
+        segments = handleFindSegmentUsingCoor500(body['lon'],body['lat'])[0]
+        print(len(segments))
+        res = handleFindReportsBySegments(segments)
+        return res
     except Exception as e:
         print(e)
         return str(e), 500

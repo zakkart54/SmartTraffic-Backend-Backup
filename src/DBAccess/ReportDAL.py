@@ -67,6 +67,26 @@ def findMax100VerifiedReportDAL():
         return res
     except PyMongoError as e:
         raise e
+    
+def findReportsBySegmentsDAL(segmentsList):
+    try:
+        client = current_app.config['DB_CLIENT']
+        reportTable = client.db["reports"]
+        res = reportTable.find({"segmentID": {"$in": segmentsList}}).sort('createdDate', -1).limit(3)
+        res = list(res)
+        return res
+    except PyMongoError as e:
+        raise e
+    
+def findValidReportsBySegmentsDAL(segmentsList):
+    try:
+        client = current_app.config['DB_CLIENT']
+        reportTable = client.db["reports"]
+        res = reportTable.find({"segmentID": {"$in": segmentsList}, "qualified": True}).sort('createdDate', -1).limit(3)
+        res = list(res)
+        return res
+    except PyMongoError as e:
+        raise e
 
 def findAllUnqualifiedReportDAL(limit=None,offset=None):
     try:
@@ -85,7 +105,6 @@ def findReportByIDDAL(id):
     try:
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
-        print(id)
         res = reportTable.find_one({"_id": ObjectId(id)})
         return res
     except PyMongoError as e:
@@ -124,7 +143,6 @@ def insertReportDAL(body):
     try:
         client = current_app.config['DB_CLIENT']
         reportTable = client.db["reports"]
-        print(body)
         reportTable.insert_one(body)
         return body
     except PyMongoError as e:

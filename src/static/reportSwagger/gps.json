@@ -1,0 +1,25 @@
+{
+  "post": {
+    "summary": "GPS",
+    "tags": ["Reports"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "examples": {
+            "basic": {
+              "value": {
+                "lon": 106.7046,
+                "lat": 10.8259
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "OK" },
+      "400": { "description": "Bad Request" }
+    }
+  }
+}

@@ -15,7 +15,7 @@ def TestForPolices(img):
         negativeConfSummary *=(1-conf)
         if negativeConfLowest > 1-conf: negativeConfLowest = 1-conf
     resNeg = (negativeConfSummary + negativeConfLowest)/2
-    if(resNeg>0.5):
+    if(resNeg>0.7):
         return (False, round(resNeg,2))
     else:
         return (True, round(1-resNeg,2))
@@ -37,7 +37,7 @@ def TestForObstacles(img):
         negativeConfSummary *=(1-conf)
         if negativeConfLowest > 1-conf: negativeConfLowest = 1-conf
     resNeg = (negativeConfSummary + negativeConfLowest)/2
-    if(resNeg>0.5):
+    if(resNeg>0.7):
         return (False, round(resNeg,2))
     else:
         return (True, round(1-resNeg,2))

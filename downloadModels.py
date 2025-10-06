@@ -1,6 +1,7 @@
 # from ultralytics import YOLO
 # from torchvision.models import resnet50
 import os
+from datetime import datetime
 def createDirs(base_dir):
     print(os.getcwd())
 # Create the main directory
@@ -77,7 +78,6 @@ def createDirs(base_dir):
     ]
     # Create each subdirectory
     for subdir in subdirs:
-        print('a')
         os.makedirs(os.path.join(os.getcwd() +'/'+ base_dir, subdir), exist_ok=True)
 
 if __name__ == "__main__":
@@ -86,5 +86,6 @@ if __name__ == "__main__":
     # a = resnet50(weights='ResNet50_Weights.DEFAULT')
     createDirs("/storage")
     createDirs("/src/storage")
+    print(datetime.time().hour)
     # model = YOLO('yolo11n.pt')
     print('downloaded')

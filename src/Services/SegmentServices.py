@@ -1,7 +1,7 @@
 from ..DBConfig.DBConnect import TrafficMongoClient
 from ..DBAccess.SegmentDAL import *
 from ..DBAccess.NodeOSMDAL import findNodesInBBoxDAL, findNodesOSMByIDsDAL
-from ..Services.NodeOSMServices import findNodeOSMInSegmentbyCoor, findNodeOSMsInSegmentbyCoor
+from ..Services.NodeOSMServices import findNodeOSMInSegmentbyCoor, findNodeOSMsInSegmentbyCoor, findNodeOSMsInSegmentbyCoor500
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
@@ -37,6 +37,7 @@ def findSegmentByCoor(lon,lat):
     if res == None: return {}, 200
     return list(res), 200
 
+
 def updateSegment(body):
     res = findSegmentByIDDAL(body['id'])
     if res == None: 
@@ -46,11 +47,21 @@ def updateSegment(body):
     
 
 def handleFindSegmentUsingCoor(lon,lat):
-    print(lon,lat)
     nearestNode = findNodeOSMInSegmentbyCoor(lon,lat)[0]['id']
-    print(nearestNode)
     resSegment = findSegmentByNode(nearestNode)[0][0]
     return resSegment, 200
+
+
+def handleFindSegmentUsingCoor500(lon,lat):
+    nearestNodes = findNodeOSMsInSegmentbyCoor500(lon,lat)[0]
+    resSegments = []
+    for i in nearestNodes:
+        seg = findSegmentByNode(i['id'])[0]
+        for i in seg: 
+            if i not in resSegments:
+                resSegments.append(i)
+    return resSegments, 200
+
 
 def findSegmentByNode(nodeID):
     res = findSegmentByNodeDAL(nodeID)
@@ -62,9 +73,10 @@ def handleFindSegmentsUsingCoor(lon,lat):
     nearestNodes = findNodeOSMsInSegmentbyCoor(lon,lat)[0]
     resSegments = []
     for i in nearestNodes:
-        seg = findSegmentByNode(i['id'])[0][0]
-        if seg not in resSegments:
-            resSegments.append(seg)
+        seg = findSegmentByNode(i['id'])[0]
+        for i in seg: 
+            if i not in resSegments:
+                resSegments.append(i)
     return resSegments, 200
 
 def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):

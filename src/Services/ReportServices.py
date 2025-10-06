@@ -138,7 +138,6 @@ def findReportDataTextID(id):
 
 def insertReport(body):
     try:
-        print(body)
         body['uploaderID'] = ObjectId(body['uploaderID'])
         if 'dataTextID' not in body: body['dataTextID'] = None
         else:
@@ -150,10 +149,10 @@ def insertReport(body):
         if 'qualified' not in body: body['qualified'] = False
         if 'createdDate' not in body: body['createdDate'] = datetime.today()
         if 'statusID' not in body: body['statusID'] = None
-        else: body['statusID'] = ObjectId(body['statusID'])
+        else:
+            if body['statusID']!= None: body['statusID'] = ObjectId(body['statusID'])
         body['segmentID'] = handleFindSegmentUsingCoor(body['lon'],body['lat'])[0]['id']
         
-        print(body)
         body = insertReportDAL(body)
 
         body['_id'] = str(body['_id'])
@@ -173,7 +172,8 @@ def updateReport(body):
         body['uploaderID'] = ObjectId(body['uploaderID'])
         if body['dataTextID']!= None: body['dataTextID'] = ObjectId(body['dataTextID'])
         if body['dataImgID']!= None: body['dataImgID'] = ObjectId(body['dataImgID'])
-        if 'statusID' in body: body['statusID'] = ObjectId(body['statusID'])
+        if 'statusID' in body: 
+            if body['statusID']!= None: body['statusID'] = ObjectId(body['statusID'])
         body['_id'] = ObjectId(body['_id'])
         res = findReportByIDDAL( body['_id'])
         if res == None: 
@@ -211,16 +211,13 @@ def handleVerify(report):
     text = None
     img = None
     if report['dataTextID'] != None: 
-        print('abbcc')
         currTextID = report['dataTextID']
         text = handleEvaluate(currTextID)[0]
     if report['dataImgID'] != None: 
-        print('bbbbbbbbcc')
         currImgID = report['dataImgID']
         img = handleEvaluate(currImgID)[0]
     harmony = {}
     fcount = 0
-    print('aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     if text == None and img == None: return jsonify({"error": "No Data included"}), 400
     elif text == None: harmony = img
     elif img == None: harmony = text
@@ -248,7 +245,6 @@ def handleVerify(report):
                     }
                     score += harmony[k]["score"]
     resEval = 0
-    print('aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     for k in harmony.keys():
         resEval += harmony[k]["score"]/4
     if fcount < 2 and resEval > 0.8:
@@ -295,7 +291,6 @@ def handleManual(report, body):
         handleNotificationWhenVerify(report['uploaderID'],str(report['_id']),0.9)
         report['qualified'] = True
         report['eval'] = 0.99
-        print(report)
         if not report['statusID'] or report['statusID']==None:
             status = insertTrafficStatusInfo({
                 'statuses':{
@@ -305,12 +300,14 @@ def handleManual(report, body):
                     'TrafficJamFlag': body['status']['TrafficJam']
                 }
             })
-            text = findDataByIDDAL(report['dataTextID'])
-            text['statusID'] = ObjectId(status[0]['_id'])
-            updateDataDAL(text)
-            img = findDataByIDDAL(report['dataImgID'])
-            img['statusID'] = ObjectId(status[0]['_id'])
-            updateDataDAL(img)
+            if report['dataTextID'] != None:
+                text = findDataByIDDAL(report['dataTextID'])
+                text['statusID'] = ObjectId(status[0]['_id'])
+                updateDataDAL(text)
+            if report['dataImgID'] != None:   
+                img = findDataByIDDAL(report['dataImgID'])
+                img['statusID'] = ObjectId(status[0]['_id'])
+                updateDataDAL(img)
             report['statusID'] = status[0]['_id']
             updateReport(report)
         else:
@@ -323,12 +320,14 @@ def handleManual(report, body):
                     'TrafficJamFlag': body['status']['TrafficJam']
                 }
             })
-            text = findDataByIDDAL(report['dataTextID'])
-            text['statusID'] = ObjectId(report['statusID'])
-            updateDataDAL(text)
-            img = findDataByIDDAL(report['dataImgID'])
-            img['statusID'] = ObjectId(report['statusID'])
-            updateDataDAL(img)
+            if report['dataTextID'] != None:
+                text = findDataByIDDAL(report['dataTextID'])
+                text['statusID'] = ObjectId(report['statusID'])
+                updateDataDAL(text)
+            if report['dataImgID'] != None:   
+                img = findDataByIDDAL(report['dataImgID'])
+                img['statusID'] = ObjectId(report['statusID'])
+                updateDataDAL(img)
             updateReport(report)
         updateSegmentStatus(report['segmentID'])
     return 'ok', 200
@@ -353,7 +352,6 @@ def updateSegmentStatus(id):
         for i in reports:
             time = i['createdDate'].hour
             status = findTrafficStatusInfoByID(i['statusID'])[0]
-            print(status)
             StatusArr[time]['FLOOD'] += booltoint(status['statuses']['FloodedFlag'])/reportLen
             StatusArr[time]['JAM'] += booltoint(status['statuses']['TrafficJamFlag'])/reportLen
             StatusArr[time]['POLICE'] += booltoint(status['statuses']['PoliceFlag'])/reportLen
@@ -367,10 +365,29 @@ def updateSegmentStatus(id):
                     'OBSTACLE': floattobool(StatusArr[i]['OBSTACLE'])
                 }
             )
-        print(reportLen)
         segment['status'] = StatusTable
         segmentTable.update_one({'id': id}, {"$set": {'status': StatusTable}})
         return StatusTable, 201
+    except PyMongoError as e:
+        raise e
+    finally:
+        client.close()
+
+
+def handleFindReportsBySegments(segmentsList):
+    try:
+        emptyIDList = []
+        for i in segmentsList:
+            emptyIDList.append(i['id'])
+        res = findValidReportsBySegmentsDAL(emptyIDList)
+        for report in res:
+            report['_id'] = str(report['_id'])
+            if report['uploaderID']: report['uploaderID'] = str(report['uploaderID'])
+            if report['dataTextID']: report['dataTextID'] = str(report['dataTextID'])
+            if report['dataImgID']: report['dataImgID'] = str(report['dataImgID'])
+            if report['statusID']: report['statusID'] = str(report['statusID'])
+            report['segmentID'] = str(report['segmentID'])
+        return res, 200
     except PyMongoError as e:
         raise e
     finally:
