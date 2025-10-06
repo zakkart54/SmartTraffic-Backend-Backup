@@ -2,6 +2,7 @@ from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import current_app
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 def findUserDAL(body):
     try:
@@ -16,12 +17,12 @@ def createRefreshTokenDAL(account,refresh_token):
     try:
         client = current_app.config['DB_CLIENT']
         refreshTokenTable = client.db['refreshTokens']
-        print(datetime.now() + timedelta(days=7))
+        # print(datetime.now() + timedelta(days=7))
         res = refreshTokenTable.insert_one({
             "token": refresh_token,
             "userID": account["_id"],
             "username": account["username"],
-            "expiredAt": datetime.now() + timedelta(days=7)
+            "expiredAt": datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')) + timedelta(days=7)
         })
         return res
     except PyMongoError as e:
@@ -35,13 +36,13 @@ def findRefreshTokenDAL(body):
             "token": body["token"],
             "userID": body["_id"],
             "username": body["username"],
-            "expiredAt": {'$gt': datetime.now()}
+            "expiredAt": {'$gt': datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))}
         })
         refresh_token =  refreshTokenTable.find_one({
             "token": body["token"],
             "userID": ObjectId(body["_id"]),
             "username": body["username"],
-            "expiredAt": {'$gt': datetime.now()}
+            "expiredAt": {'$gt': datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))}
         })
         if refresh_token == None: return None
         del refresh_token['_id']

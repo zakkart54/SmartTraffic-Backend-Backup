@@ -5,6 +5,7 @@ from ..Services.NodeOSMServices import findNodeOSMInSegmentbyCoor, findNodeOSMsI
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
+from zoneinfo import ZoneInfo
 import datetime
 
 #["type","id","way_id","segments","tags","version","timestamp","changeset","uid","user"]:
@@ -88,7 +89,7 @@ def findSegmentsInBBox(lon_min, lat_min, lon_max, lat_max):
             return [], 200
             
         segments = findSegmentsWithNodeIDs(node_ids)
-        current_hour = datetime.time().hour
+        current_hour = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')).hour
         
         all_node_ids = set()
         for seg in segments:

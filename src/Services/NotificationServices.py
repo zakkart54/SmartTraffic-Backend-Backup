@@ -4,6 +4,7 @@ from ..Services.SegmentServices import handleFindSegmentsUsingCoor
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 from flask import jsonify
+from zoneinfo import ZoneInfo
 from datetime import datetime
 
 
@@ -36,7 +37,7 @@ def insertNotifications(body):
     for i in strUserIDList:
         objIDList.append(ObjectId(i))
     body['userID'] = objIDList
-    body['createdDate'] = datetime.now()
+    body['createdDate'] = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
     
     body = insertNotificationsDAL(body)
 
@@ -75,7 +76,7 @@ def handleNotificationUsingGPS(lon,lat,uid):
         "POLICE": False,
         "OBSTACLE": False
     }
-    currHour = datetime.now().hour
+    currHour = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')).hour
     segs = handleFindSegmentsUsingCoor(lon,lat)[0]
     for i in segs:
         NotiContent = 'Hiện nay ở đoạn đường '
@@ -98,7 +99,7 @@ def handleNotificationUsingGPS(lon,lat,uid):
                 'type': 'STATUS',
                 'content': NotiContent,
                 'segmentID': str(i['id']),
-                'timeStamp': datetime.now(),
+                'timeStamp': datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')),
                 'read': False
             }
             print(bodyNoti)

@@ -11,6 +11,7 @@ from flask import jsonify
 import os
 import time
 import shutil
+from zoneinfo import ZoneInfo
 from dotenv import *
 from ..EvaluationLib.main import *
 from ..EvaluationLib.image.lib.AITest import *
@@ -111,7 +112,7 @@ def insertData(body):
     else: body['InfoID'] = ObjectId(body['InfoID'])
     if 'reportID' not in body: body['reportID'] = None 
     else: body['reportID'] = ObjectId(body['reportID'])
-    if 'uploadTime' not in body: body["uploadTime"] = datetime.today()
+    if 'uploadTime' not in body: body["uploadTime"] = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
     if 'processed' not in body: body['processed'] = False
     if 'processed_time' not in body: body['processed_time'] = None
     if 'TrainValTest' not in body: body['TrainValTest'] = 0
@@ -247,7 +248,7 @@ def handleEvaluate(id):
     infoID = str(data['InfoID'])
     if data['type']=='text': print('bbbbbbbbbbbbbbbbbbb')
     data['processed'] = True
-    data['processed_time'] = datetime.now()
+    data['processed_time'] = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
     if data['type'] == 'image':
         img = findImageByID(infoID)[0]
         imgSrc = os.getenv('STORAGE') + '/images/unverified/' + img['source']
@@ -260,7 +261,7 @@ def handleEvaluate(id):
         # if resEval > 0.8:
         if True:
             data['processed'] = True
-            data['processed_time'] = datetime.now()
+            data['processed_time'] = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
             if 'statusID' not in data or data['statusID'] is None:
                 status = insertTrafficStatusInfo({
                     'statuses':{
