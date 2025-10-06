@@ -13,3 +13,4 @@ flask-jwt-extended==4.7.1
 torch==2.8.0
 transformers
 ultralytics
+tzdata
